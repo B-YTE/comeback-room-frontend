@@ -33,8 +33,10 @@
 ## 디자인 (Figma)
 
 - 디자인 파일: https://www.figma.com/design/5ep8CVNydboFXKLMiUEAeJ/%EB%94%94%EC%9E%90%EC%9D%B8 (fileKey `5ep8CVNydboFXKLMiUEAeJ`)
-- `component-button` 섹션: node `276:289`
+- 현재 `와이어프레임` 페이지(node `1:2`)만 있고 디자인은 아직 완성되지 않았다. 와이어프레임은 화면 구성·레이아웃 참고용으로만 쓰고, 픽셀 값을 그대로 옮기지 않는다.
+- 버튼 등 공통 컴포넌트 섹션과 디자인 토큰(색상·폰트)은 디자인 확정 후 추가 예정이다. 확정되면 이 문서에 노드 ID를 기록한다.
 - UI 구현 시 Figma MCP로 디자인 컨텍스트를 가져와서 구현하되, 색상·간격·폰트는 Tailwind 설정의 디자인 토큰으로 옮겨서 사용한다.
+- Figma MCP 서버는 레포 루트의 `.mcp.json`에 등록되어 있다.
 
 ## 폴더 구조
 
