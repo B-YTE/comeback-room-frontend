@@ -34,7 +34,8 @@
 
 - 디자인 파일: https://www.figma.com/design/5ep8CVNydboFXKLMiUEAeJ/%EB%94%94%EC%9E%90%EC%9D%B8 (fileKey `5ep8CVNydboFXKLMiUEAeJ`)
 - 현재 `와이어프레임` 페이지(node `1:2`)만 있고 디자인은 아직 완성되지 않았다. 와이어프레임은 화면 구성·레이아웃 참고용으로만 쓰고, 픽셀 값을 그대로 옮기지 않는다.
-- 버튼 등 공통 컴포넌트 섹션과 디자인 토큰(색상·폰트)은 디자인 확정 후 추가 예정이다. 확정되면 이 문서에 노드 ID를 기록한다.
+- `디자인시스템` 페이지(node `328:114`): Variables 프레임(`447:15`, 색상·간격·라운드), Text style 프레임(`447:4722`), Icons 섹션(`328:118`)
+- 색상·폰트 토큰은 `src/app/styles/theme.css`에 옮겨 두었다. 색은 Semantic 토큰(`bg-primary-normal`, `text-label-normal` 등)을 우선 쓰고, 글자 스타일은 `typo-*` 클래스(`typo-body-large` 등)를 쓴다. Tailwind 기본 팔레트(`bg-white`, `text-red-500` 등)는 비활성화되어 있다.
 - UI 구현 시 Figma MCP로 디자인 컨텍스트를 가져와서 구현하되, 색상·간격·폰트는 Tailwind 설정의 디자인 토큰으로 옮겨서 사용한다.
 - Figma MCP 서버는 레포 루트의 `.mcp.json`에 등록되어 있다.
 
@@ -243,7 +244,7 @@ src/
 - [ ] axios 인스턴스 + 토큰 인터셉터 (인스턴스·요청 인터셉터 완료, 토큰 갱신은 인증 방식 확정 후)
 - [x] TanStack Query Provider, Zustand 스토어 기본 틀
 - [ ] MSW 설정 + 시청방 목록 목업 (MSW 설정 완료, 시청방 목록 목업 남음)
-- [ ] Tailwind 설정, 디자인 토큰(색상, 폰트) 반영, prettier-plugin-tailwindcss와 `cn()` 유틸 추가 (Figma 기준 토큰 반영 남음)
+- [ ] Tailwind 설정, 디자인 토큰(색상, 폰트) 반영, prettier-plugin-tailwindcss와 `cn()` 유틸 추가 (색상·폰트 토큰 반영 완료, 간격·라운드 토큰 남음)
 - [ ] 공통 컴포넌트: Button, Input, Modal, Navbar
 - [ ] PR·이슈 템플릿, 브랜치 보호 규칙 (main, develop) (템플릿 완료, 브랜치 보호 남음)
 - [ ] Vercel 연결 및 develop 브랜치 미리보기 배포

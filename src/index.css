@@ -1,19 +1,18 @@
 @import 'tailwindcss';
+@import './app/styles/theme.css';
 
-@theme {
-  --color-primary: #7c3aed;
-  --color-background: #ffffff;
-  --color-text: #111827;
-  --color-muted: #6b7280;
-  --color-border: #e5e7eb;
-}
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
 
-html,
-body,
-#root {
-  min-height: 100%;
-}
+  html {
+    color-scheme: dark;
+  }
 
-body {
-  margin: 0;
+  body {
+    @apply bg-background-base text-label-normal antialiased;
+  }
 }

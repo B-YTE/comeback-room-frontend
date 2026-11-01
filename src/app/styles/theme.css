@@ -1,0 +1,318 @@
+/*
+ * 디자인 토큰 (Figma 「디자인시스템」 페이지, node 328:114)
+ * - 색상: Variables 컬렉션 Primitive: Color / Semantic: Color
+ * - 타이포그래피: Text style 프레임 (node 447:4722)
+ *
+ * 화면 코드에서는 Semantic 토큰(primary-*, label-*, background-* 등)을 우선 사용하고,
+ * Primitive 팔레트(gray-*, pink-* 등)는 Semantic에 없는 경우에만 사용한다.
+ */
+
+@theme {
+  /* Tailwind 기본 색상 팔레트를 비우고 디자인 토큰만 사용한다 */
+  --color-*: initial;
+
+  /* ───────── Font family ───────── */
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+    'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --font-display: Inter, 'Pretendard Variable', Pretendard, sans-serif;
+
+  /* ───────── Radius (Semantic: Appearance) ─────────
+   * rounded-small / medium / large / extralarge 만 사용한다.
+   * radius/full(99px)은 Tailwind 기본 rounded-full로 대신한다. */
+  --radius-*: initial;
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+  --radius-extralarge: 20px;
+
+  /* ───────── Primitive: Color ───────── */
+  --color-gray-0: #ffffff;
+  --color-gray-50: #f7f7f8;
+  --color-gray-100: #efeff1;
+  --color-gray-200: #d7d7dc;
+  --color-gray-300: #b9bac1;
+  --color-gray-400: #9a9ba4;
+  --color-gray-500: #777983;
+  --color-gray-600: #595b64;
+  --color-gray-700: #3e3f46;
+  --color-gray-800: #24242b;
+  --color-gray-900: #19191f;
+  --color-gray-950: #0d0d10;
+  --color-gray-1000: #000000;
+
+  --color-pink-50: #fef1f4;
+  --color-pink-100: #fddde6;
+  --color-pink-200: #fcbacd;
+  --color-pink-300: #fc92af;
+  --color-pink-400: #fd628e;
+  --color-pink-500: #ff376f;
+  --color-pink-600: #fc0349;
+  --color-pink-700: #d0063f;
+  --color-pink-800: #a50934;
+  --color-pink-900: #7b0929;
+
+  --color-purple-50: #f4f1fe;
+  --color-purple-100: #e6ddfd;
+  --color-purple-200: #ccbafc;
+  --color-purple-300: #ae92fc;
+  --color-purple-400: #8b62fd;
+  --color-purple-500: #8255ff;
+  --color-purple-600: #4503fc;
+  --color-purple-700: #3c06d0;
+  --color-purple-800: #3209a5;
+  --color-purple-900: #27097b;
+
+  --color-lime-50: #f8fef1;
+  --color-lime-100: #f0fddd;
+  --color-lime-200: #e0fcba;
+  --color-lime-300: #cffc92;
+  --color-lime-400: #bcfd62;
+  --color-lime-500: #aeff3f;
+  --color-lime-600: #93fc03;
+  --color-lime-700: #7bd006;
+  --color-lime-800: #63a509;
+  --color-lime-900: #4b7b09;
+
+  --color-status-green: #17b26a;
+  --color-status-orange: #f79009;
+  --color-status-red: #f04438;
+
+  /* ───────── Semantic: Color ───────── */
+  --color-static-white: var(--color-gray-0);
+  --color-static-black: var(--color-gray-1000);
+
+  --color-primary-normal: var(--color-pink-500);
+  --color-primary-hover: var(--color-pink-400);
+  --color-primary-pressed: var(--color-pink-700);
+  --color-primary-subtle: var(--color-pink-50);
+  --color-primary-foreground: var(--color-gray-1000);
+
+  --color-label-strong: var(--color-gray-0);
+  --color-label-normal: var(--color-gray-100);
+  --color-label-neutral: var(--color-gray-300);
+  --color-label-assistive: var(--color-gray-400);
+  --color-label-disabled: var(--color-gray-600);
+
+  --color-background-base: var(--color-gray-950);
+  --color-background-surface: color-mix(in srgb, var(--color-gray-900) 80%, transparent);
+  --color-background-elevated: color-mix(in srgb, var(--color-gray-800) 90%, transparent);
+  --color-background-subtle: var(--color-gray-800);
+  --color-background-interactive: color-mix(in srgb, var(--color-gray-500) 50%, transparent);
+  --color-background-disabled: var(--color-gray-800);
+  --color-background-scrim: color-mix(in srgb, var(--color-gray-1000) 72%, transparent);
+
+  --color-line-subtle: var(--color-gray-800);
+  --color-line-normal: var(--color-gray-500);
+  --color-line-strong: var(--color-gray-600);
+  --color-line-focus: var(--color-pink-400);
+  --color-line-disabled: var(--color-gray-800);
+
+  --color-interaction-hover: color-mix(in srgb, var(--color-gray-0) 8%, transparent);
+  --color-interaction-pressed: color-mix(in srgb, var(--color-gray-0) 12%, transparent);
+  --color-interaction-selected: var(--color-pink-900);
+  --color-interaction-focus: var(--color-pink-400);
+  --color-interaction-disabled: var(--color-gray-800);
+
+  --color-status-positive: var(--color-status-green);
+  --color-status-cautionary: var(--color-status-orange);
+  --color-status-negative: var(--color-status-red);
+
+  --color-accent-live-solid: var(--color-lime-500);
+  --color-accent-live-foreground: var(--color-lime-400);
+  --color-accent-live-subtle: var(--color-lime-900);
+  --color-accent-live-on-solid: var(--color-gray-1000);
+
+  --color-accent-engagement-solid: var(--color-purple-500);
+  --color-accent-engagement-foreground: var(--color-purple-300);
+  --color-accent-engagement-subtle: var(--color-purple-900);
+  --color-accent-engagement-on-solid: var(--color-gray-1000);
+}
+
+/*
+ * ───────── Typography ─────────
+ * Figma Text style 하나를 클래스 하나로 쓴다. (예: className="typo-body-large text-label-normal")
+ * text-* 대신 typo-* 접두사를 써서 cn()(tailwind-merge)이 글자색 클래스와 충돌시키지 않게 한다.
+ * letter-spacing은 Figma의 % 값을 em으로 옮겼다. (-2% → -0.02em)
+ */
+
+@utility typo-display-large {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 72px;
+  letter-spacing: -0.02em;
+}
+
+@utility typo-display-medium {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 56px;
+  letter-spacing: -0.02em;
+}
+
+@utility typo-heading-h1 {
+  font-family: var(--font-sans);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 52px;
+  letter-spacing: -0.01em;
+}
+
+@utility typo-heading-medium {
+  font-family: var(--font-sans);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 42px;
+  letter-spacing: -0.01em;
+}
+
+@utility typo-heading-h3 {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 34px;
+  letter-spacing: -0.01em;
+}
+
+@utility typo-heading-h4 {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 34px;
+  letter-spacing: -0.01em;
+}
+
+@utility typo-heading-regular {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 34px;
+  letter-spacing: 0;
+}
+
+@utility typo-title-20-semibold {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.005em;
+}
+
+@utility typo-title-18-semibold {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: -0.005em;
+}
+
+/*
+ * 아래 7개는 Text style 프레임에 문서화되지 않았지만 GUI에서 쓰이는 로컬 스타일이다.
+ * Figma 이름이 정리되면 클래스 이름도 맞춰 바꾼다.
+ * Figma 행간이 auto인 스타일은 line-height: normal로 옮겼다.
+ */
+
+/* Figma: semibold */
+@utility typo-heading-semibold-36 {
+  font-family: var(--font-sans);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 46px;
+  letter-spacing: 0;
+}
+
+/* Figma: Heading/bold (28px) */
+@utility typo-heading-bold-28 {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+/* Figma: Heading/bold (24px) */
+@utility typo-heading-bold-24 {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+/* Figma: Title/20/Medium */
+@utility typo-title-20-medium {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+}
+
+/* Figma: Title/20/Regular */
+@utility typo-title-20-regular {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+}
+
+/* Figma: Title/18/med */
+@utility typo-title-18-medium {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+/* Figma: Title/18/reg */
+@utility typo-title-18-regular {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+}
+
+@utility typo-body-large {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+@utility typo-body-medium {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+@utility typo-label-large {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: 0;
+}
+
+@utility typo-label-medium {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+@utility typo-caption {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0;
+}
