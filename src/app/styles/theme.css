@@ -208,6 +208,75 @@
   letter-spacing: -0.005em;
 }
 
+/*
+ * 아래 7개는 Text style 프레임에 문서화되지 않았지만 GUI에서 쓰이는 로컬 스타일이다.
+ * Figma 이름이 정리되면 클래스 이름도 맞춰 바꾼다.
+ * Figma 행간이 auto인 스타일은 line-height: normal로 옮겼다.
+ */
+
+/* Figma: semibold */
+@utility typo-heading-semibold-36 {
+  font-family: var(--font-sans);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 46px;
+  letter-spacing: 0;
+}
+
+/* Figma: Heading/bold (28px) */
+@utility typo-heading-bold-28 {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+/* Figma: Heading/bold (24px) */
+@utility typo-heading-bold-24 {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+/* Figma: Title/20/Medium */
+@utility typo-title-20-medium {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+}
+
+/* Figma: Title/20/Regular */
+@utility typo-title-20-regular {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+}
+
+/* Figma: Title/18/med */
+@utility typo-title-18-medium {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+/* Figma: Title/18/reg */
+@utility typo-title-18-regular {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+}
+
 @utility typo-body-large {
   font-family: var(--font-sans);
   font-size: 16px;
