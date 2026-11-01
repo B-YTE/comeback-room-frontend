@@ -17,6 +17,15 @@
     'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   --font-display: Inter, 'Pretendard Variable', Pretendard, sans-serif;
 
+  /* ───────── Radius (Semantic: Appearance) ─────────
+   * rounded-small / medium / large / extralarge 만 사용한다.
+   * radius/full(99px)은 Tailwind 기본 rounded-full로 대신한다. */
+  --radius-*: initial;
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+  --radius-extralarge: 20px;
+
   /* ───────── Primitive: Color ───────── */
   --color-gray-0: #ffffff;
   --color-gray-50: #f7f7f8;
