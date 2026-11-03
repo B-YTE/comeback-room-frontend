@@ -1,0 +1,65 @@
+import { type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { AuthCard } from '@/features/auth/components/AuthCard';
+import { Button } from '@/shared/ui/Button';
+import { TextField } from '@/shared/ui/TextField';
+import { TextFieldButton } from '@/shared/ui/TextFieldButton';
+
+// Figma GUI > 1-1-2 아이디 찾기 (node 333:1974)
+export const FindIdForm = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // shortcut: 아이디 찾기 API 명세가 없어 예시 아이디로 결과 화면에 이동, 명세 확정 후 응답값으로 교체
+    navigate('/find-id/result', { state: { loginId: 'ewhaian' } });
+  };
+
+  const handleSendCode = () => {
+    // shortcut: 인증번호 발송 API 명세가 없어 아무 동작 안 함, 명세 확정 후 연결
+  };
+
+  return (
+    <AuthCard>
+      <h1 className="typo-heading-medium text-label-normal">아이디 찾기</h1>
+
+      <form onSubmit={handleSubmit} className="flex w-full flex-col gap-14">
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-4">
+            <label htmlFor="find-id-email" className="typo-heading-h4 text-label-normal">
+              이메일
+            </label>
+            <div className="flex gap-3.75">
+              <TextField
+                id="find-id-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="ewha123@gmail.com"
+                required
+              />
+              <TextFieldButton onClick={handleSendCode}>인증번호 발송</TextFieldButton>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <label htmlFor="find-id-code" className="typo-heading-h4 text-label-normal">
+              인증코드 입력
+            </label>
+            <TextField
+              id="find-id-code"
+              name="code"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder="인증코드를 입력해주세요"
+              required
+            />
+          </div>
+        </div>
+
+        <Button type="submit">아이디 찾기</Button>
+      </form>
+    </AuthCard>
+  );
+};

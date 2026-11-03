@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import googleLogoUrl from '@/assets/google-logo.png';
 import logoWordmarkUrl from '@/assets/logo-wordmark.svg';
+import { AuthCard } from '@/features/auth/components/AuthCard';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
 
@@ -20,7 +21,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <section className="mx-auto mt-40 mb-35 flex w-162.5 flex-col items-center gap-20 rounded-extralarge border border-line-focus bg-background-surface p-14">
+    <AuthCard>
       <div className="flex flex-col items-center gap-4">
         <h1>
           <img src={logoWordmarkUrl} alt="COMEBACK ROOM" className="w-90" />
@@ -58,7 +59,7 @@ export const LoginForm = () => {
                   required
                 />
               </div>
-              <Link to="/find-account" className="self-end typo-body-medium text-label-neutral">
+              <Link to="/find-id" className="self-end typo-body-medium text-label-neutral">
                 아이디 / 비밀번호 찾기
               </Link>
             </div>
@@ -77,6 +78,6 @@ export const LoginForm = () => {
           계정이 없으신가요? <Link to="/signup">회원가입</Link>
         </p>
       </div>
-    </section>
+    </AuthCard>
   );
 };
