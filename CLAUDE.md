@@ -75,6 +75,7 @@ src/
 - 모든 기능 폴더의 하위 구성은 `components / hooks / api / types`로 통일한다.
 - 폴더명은 약어 없이 풀어서 쓴다 (`stInfo` ✗ → `student-info` ○).
 - 공통 코드는 `shared` 한 곳에만 둔다.
+- Figma 디자인시스템에 있는 부품(Button, TextField 등)은 한 곳에서만 써도 `shared/ui`에 둔다. 특정 기능 화면에서만 쓰는 조합(예: 인증 카드)은 그 기능 폴더에 둔다.
 
 ## 네이밍 규칙
 
