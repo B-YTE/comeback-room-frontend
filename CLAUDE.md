@@ -36,6 +36,7 @@
 - 현재 `와이어프레임` 페이지(node `1:2`)만 있고 디자인은 아직 완성되지 않았다. 와이어프레임은 화면 구성·레이아웃 참고용으로만 쓰고, 픽셀 값을 그대로 옮기지 않는다.
 - `디자인시스템` 페이지(node `328:114`): Variables 프레임(`447:15`, 색상·간격·라운드), Text style 프레임(`447:4722`), Icons 섹션(`328:118`)
 - 색상·폰트 토큰은 `src/app/styles/theme.css`에 옮겨 두었다. 색은 Semantic 토큰(`bg-primary-normal`, `text-label-normal` 등)을 우선 쓰고, 글자 스타일은 `typo-*` 클래스(`typo-body-large` 등)를 쓴다. Tailwind 기본 팔레트(`bg-white`, `text-red-500` 등)는 비활성화되어 있다.
+- Figma는 1920px 프레임 기준이라 크기 토큰(글자 크기·행간·라운드·간격)은 Figma 값 ÷1.5로 넣어 두었다. Figma 수치는 그대로 `Figma px / 4` 클래스(`h-16` = Figma 64px)로 옮기면 `--spacing`이 알아서 줄여 준다.
 - UI 구현 시 Figma MCP로 디자인 컨텍스트를 가져와서 구현하되, 색상·간격·폰트는 Tailwind 설정의 디자인 토큰으로 옮겨서 사용한다.
 - Figma MCP 서버는 레포 루트의 `.mcp.json`에 등록되어 있다.
 
