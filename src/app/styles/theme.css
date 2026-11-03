@@ -3,6 +3,10 @@
  * - 색상: Variables 컬렉션 Primitive: Color / Semantic: Color
  * - 타이포그래피: Text style 프레임 (node 447:4722)
  *
+ * 크기 값(font-size, line-height, radius, spacing)은 Figma 값을 1.5로 나눈 값이다.
+ * Figma는 1920px 프레임 기준이라 그대로 옮기면 실제 화면에서 1.5배 커 보이기 때문이다.
+ * Figma 수치를 Tailwind 클래스로 옮길 때는 지금처럼 Figma px / 4 를 쓰면 된다. (spacing이 알아서 줄여 준다)
+ *
  * 화면 코드에서는 Semantic 토큰(primary-*, label-*, background-* 등)을 우선 사용하고,
  * Primitive 팔레트(gray-*, pink-* 등)는 Semantic에 없는 경우에만 사용한다.
  */
@@ -10,6 +14,9 @@
 @theme {
   /* Tailwind 기본 색상 팔레트를 비우고 디자인 토큰만 사용한다 */
   --color-*: initial;
+
+  /* 간격 단위도 Figma 값의 1/1.5 (예: Figma 64px → h-16 = 42.67px) */
+  --spacing: calc(0.25rem / 1.5);
 
   /* ───────── Font family ───────── */
   --font-sans:
@@ -21,10 +28,10 @@
    * rounded-small / medium / large / extralarge 만 사용한다.
    * radius/full(99px)은 Tailwind 기본 rounded-full로 대신한다. */
   --radius-*: initial;
-  --radius-small: 8px;
-  --radius-medium: 12px;
-  --radius-large: 16px;
-  --radius-extralarge: 20px;
+  --radius-small: 5.33px;
+  --radius-medium: 8px;
+  --radius-large: 10.67px;
+  --radius-extralarge: 13.33px;
 
   /* ───────── Primitive: Color ───────── */
   --color-gray-0: #ffffff;
@@ -138,73 +145,73 @@
 
 @utility typo-display-large {
   font-family: var(--font-display);
-  font-size: 64px;
+  font-size: 42.67px;
   font-weight: 700;
-  line-height: 72px;
+  line-height: 48px;
   letter-spacing: -0.02em;
 }
 
 @utility typo-display-medium {
   font-family: var(--font-display);
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 700;
-  line-height: 56px;
+  line-height: 37.33px;
   letter-spacing: -0.02em;
 }
 
 @utility typo-heading-h1 {
   font-family: var(--font-sans);
-  font-size: 40px;
+  font-size: 26.67px;
   font-weight: 700;
-  line-height: 52px;
+  line-height: 34.67px;
   letter-spacing: -0.01em;
 }
 
 @utility typo-heading-medium {
   font-family: var(--font-sans);
-  font-size: 32px;
+  font-size: 21.33px;
   font-weight: 500;
-  line-height: 42px;
+  line-height: 28px;
   letter-spacing: -0.01em;
 }
 
 @utility typo-heading-h3 {
   font-family: var(--font-sans);
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 34px;
+  line-height: 22.67px;
   letter-spacing: -0.01em;
 }
 
 @utility typo-heading-h4 {
   font-family: var(--font-sans);
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 500;
-  line-height: 34px;
+  line-height: 22.67px;
   letter-spacing: -0.01em;
 }
 
 @utility typo-heading-regular {
   font-family: var(--font-sans);
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 34px;
+  line-height: 22.67px;
   letter-spacing: 0;
 }
 
 @utility typo-title-20-semibold {
   font-family: var(--font-sans);
-  font-size: 20px;
+  font-size: 13.33px;
   font-weight: 600;
-  line-height: 28px;
+  line-height: 18.67px;
   letter-spacing: -0.005em;
 }
 
 @utility typo-title-18-semibold {
   font-family: var(--font-sans);
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 26px;
+  line-height: 17.33px;
   letter-spacing: -0.005em;
 }
 
@@ -217,25 +224,25 @@
 /* Figma: semibold */
 @utility typo-heading-semibold-36 {
   font-family: var(--font-sans);
-  font-size: 36px;
+  font-size: 24px;
   font-weight: 600;
-  line-height: 46px;
+  line-height: 30.67px;
   letter-spacing: 0;
 }
 
-/* Figma: Heading/bold (28px) */
+/* Figma: Heading/bold (18.67px) */
 @utility typo-heading-bold-28 {
   font-family: var(--font-sans);
-  font-size: 28px;
+  font-size: 18.67px;
   font-weight: 700;
   line-height: normal;
   letter-spacing: 0;
 }
 
-/* Figma: Heading/bold (24px) */
+/* Figma: Heading/bold (16px) */
 @utility typo-heading-bold-24 {
   font-family: var(--font-sans);
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 700;
   line-height: normal;
   letter-spacing: 0;
@@ -244,25 +251,25 @@
 /* Figma: Title/20/Medium */
 @utility typo-title-20-medium {
   font-family: var(--font-sans);
-  font-size: 20px;
+  font-size: 13.33px;
   font-weight: 500;
-  line-height: 28px;
+  line-height: 18.67px;
   letter-spacing: -0.01em;
 }
 
 /* Figma: Title/20/Regular */
 @utility typo-title-20-regular {
   font-family: var(--font-sans);
-  font-size: 20px;
+  font-size: 13.33px;
   font-weight: 400;
-  line-height: 28px;
+  line-height: 18.67px;
   letter-spacing: -0.01em;
 }
 
 /* Figma: Title/18/med */
 @utility typo-title-18-medium {
   font-family: var(--font-sans);
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 500;
   line-height: normal;
   letter-spacing: 0;
@@ -271,48 +278,48 @@
 /* Figma: Title/18/reg */
 @utility typo-title-18-regular {
   font-family: var(--font-sans);
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 26px;
+  line-height: 17.33px;
   letter-spacing: 0;
 }
 
 @utility typo-body-large {
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 10.67px;
   font-weight: 400;
-  line-height: 24px;
+  line-height: 16px;
   letter-spacing: 0;
 }
 
 @utility typo-body-medium {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 9.33px;
   font-weight: 400;
-  line-height: 20px;
+  line-height: 13.33px;
   letter-spacing: 0;
 }
 
 @utility typo-label-large {
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 10.67px;
   font-weight: 600;
-  line-height: 22px;
+  line-height: 14.67px;
   letter-spacing: 0;
 }
 
 @utility typo-label-medium {
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 9.33px;
   font-weight: 500;
-  line-height: 20px;
+  line-height: 13.33px;
   letter-spacing: 0;
 }
 
 @utility typo-caption {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 8px;
   font-weight: 400;
-  line-height: 18px;
+  line-height: 12px;
   letter-spacing: 0;
 }
