@@ -58,7 +58,7 @@ export const LoginForm = () => {
                   required
                 />
               </div>
-              <Link to="/find-account" className="self-end typo-body-medium text-label-neutral">
+              <Link to="/find-id" className="self-end typo-body-medium text-label-neutral">
                 아이디 / 비밀번호 찾기
               </Link>
             </div>
