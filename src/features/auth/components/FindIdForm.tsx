@@ -1,8 +1,10 @@
 import { type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { AuthCard } from '@/features/auth/components/AuthCard';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
+import { TextFieldButton } from '@/shared/ui/TextFieldButton';
 
 // Figma GUI > 1-1-2 아이디 찾기 (node 333:1974)
 export const FindIdForm = () => {
@@ -19,7 +21,7 @@ export const FindIdForm = () => {
   };
 
   return (
-    <section className="mx-auto mt-40 mb-35 flex w-162.5 flex-col items-center gap-20 rounded-extralarge border border-line-focus bg-background-surface p-14">
+    <AuthCard>
       <h1 className="typo-heading-medium text-label-normal">아이디 찾기</h1>
 
       <form onSubmit={handleSubmit} className="flex w-full flex-col gap-14">
@@ -37,13 +39,7 @@ export const FindIdForm = () => {
                 placeholder="ewha123@gmail.com"
                 required
               />
-              <button
-                type="button"
-                onClick={handleSendCode}
-                className="h-14 w-39 shrink-0 rounded-medium bg-label-normal px-6 typo-title-20-semibold text-background-base"
-              >
-                인증번호 발송
-              </button>
+              <TextFieldButton onClick={handleSendCode}>인증번호 발송</TextFieldButton>
             </div>
           </div>
 
@@ -64,6 +60,6 @@ export const FindIdForm = () => {
 
         <Button type="submit">아이디 찾기</Button>
       </form>
-    </section>
+    </AuthCard>
   );
 };

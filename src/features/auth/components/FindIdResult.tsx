@@ -1,5 +1,6 @@
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
+import { AuthCard } from '@/features/auth/components/AuthCard';
 import { Button } from '@/shared/ui/Button';
 
 // Figma GUI > 1-1-2-1 아이디 찾기 결과 (node 333:520)
@@ -11,7 +12,7 @@ export const FindIdResult = () => {
   if (!loginId) return <Navigate to="/find-id" replace />;
 
   return (
-    <section className="mx-auto mt-40 mb-35 flex w-243.5 flex-col items-center gap-20 rounded-extralarge border border-line-focus bg-background-surface p-14">
+    <AuthCard className="w-243.5">
       <div className="flex flex-col items-center gap-4">
         <h1 className="typo-heading-medium text-label-normal">아이디 찾기</h1>
         <p className="typo-title-20-regular text-label-neutral">
@@ -27,6 +28,6 @@ export const FindIdResult = () => {
           로그인 페이지로 이동
         </Button>
       </div>
-    </section>
+    </AuthCard>
   );
 };
