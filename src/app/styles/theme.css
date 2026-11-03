@@ -4,6 +4,7 @@
  * - 타이포그래피: Text style 프레임 (node 447:4722)
  *
  * 크기 값(font-size, line-height, radius, spacing)은 Figma 값을 1.5로 나눈 값이다.
+ * 단, ÷1.5 하면 12px보다 작아지는 글자(body, label, caption)는 읽기 어려워서 13px로 맞췄다.
  * Figma는 1920px 프레임 기준이라 그대로 옮기면 실제 화면에서 1.5배 커 보이기 때문이다.
  * Figma 수치를 Tailwind 클래스로 옮길 때는 지금처럼 Figma px / 4 를 쓰면 된다. (spacing이 알아서 줄여 준다)
  *
@@ -286,40 +287,40 @@
 
 @utility typo-body-large {
   font-family: var(--font-sans);
-  font-size: 10.67px;
+  font-size: 13px;
   font-weight: 400;
-  line-height: 16px;
+  line-height: 20px;
   letter-spacing: 0;
 }
 
 @utility typo-body-medium {
   font-family: var(--font-sans);
-  font-size: 9.33px;
+  font-size: 13px;
   font-weight: 400;
-  line-height: 13.33px;
+  line-height: 19px;
   letter-spacing: 0;
 }
 
 @utility typo-label-large {
   font-family: var(--font-sans);
-  font-size: 10.67px;
+  font-size: 13px;
   font-weight: 600;
-  line-height: 14.67px;
+  line-height: 18px;
   letter-spacing: 0;
 }
 
 @utility typo-label-medium {
   font-family: var(--font-sans);
-  font-size: 9.33px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 13.33px;
+  line-height: 19px;
   letter-spacing: 0;
 }
 
 @utility typo-caption {
   font-family: var(--font-sans);
-  font-size: 8px;
+  font-size: 13px;
   font-weight: 400;
-  line-height: 12px;
+  line-height: 20px;
   letter-spacing: 0;
 }
