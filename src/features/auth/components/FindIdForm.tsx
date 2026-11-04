@@ -1,4 +1,4 @@
-import { type FormEvent } from 'react';
+import { type SubmitEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AuthCard } from '@/features/auth/components/AuthCard';
@@ -10,7 +10,7 @@ import { TextFieldButton } from '@/shared/ui/TextFieldButton';
 export const FindIdForm = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     // shortcut: 아이디 찾기 API 명세가 없어 예시 아이디로 결과 화면에 이동, 명세 확정 후 응답값으로 교체
     navigate('/find-id/result', { state: { loginId: 'ewhaian' } });

@@ -1,4 +1,4 @@
-import { type FormEvent } from 'react';
+import { type SubmitEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 import logoUrl from '@/assets/logo.svg';
@@ -17,7 +17,7 @@ interface NavbarProps {
 
 // Figma GUI > component > top bar (node 491:332)
 export const Navbar = ({ user, onSearch }: NavbarProps) => {
-  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const keyword = new FormData(event.currentTarget).get('keyword');
     if (typeof keyword === 'string' && keyword.trim()) {
