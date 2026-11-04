@@ -7,6 +7,7 @@ import { FindIdResultPage } from '@/pages/FindIdResultPage';
 import { FindPasswordPage } from '@/pages/FindPasswordPage';
 import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
+import { MyPage } from '@/pages/MyPage';
 import { ResetPasswordPage } from '@/pages/ResetPasswordPage';
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="mypage" element={<MyPage />} />
         <Route element={<GuestOnlyRoute />}>
           <Route path="login" element={<LoginPage />} />
           <Route path="find-id" element={<FindIdPage />} />
