@@ -9,6 +9,7 @@ import { HomePage } from '@/pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MyPage } from '@/pages/MyPage';
 import { ResetPasswordPage } from '@/pages/ResetPasswordPage';
+import { ViewingListPage } from '@/pages/ViewingListPage';
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
         <Route path="mypage" element={<MyPage />} />
+        <Route path="mypage/viewing-list" element={<ViewingListPage />} />
         <Route element={<GuestOnlyRoute />}>
           <Route path="login" element={<LoginPage />} />
           <Route path="find-id" element={<FindIdPage />} />
