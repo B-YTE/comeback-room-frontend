@@ -3,9 +3,9 @@ import { useState, type FormEvent } from 'react';
 import { ViewingRoomCard } from '@/features/room/components/ViewingRoomCard';
 import { useViewingList } from '@/features/room/hooks/useViewingList';
 import { Button } from '@/shared/ui/Button';
+import { ChipButton } from '@/shared/ui/Chip';
 import { TextField } from '@/shared/ui/TextField';
 import { IconPlus } from '@/shared/ui/icons';
-import { cn } from '@/shared/utils/cn';
 
 const INITIAL_FILTERS = ['에스파', '카리나', '아이브', '장원영'];
 
@@ -42,22 +42,17 @@ export const ViewingListContent = () => {
       </header>
       <div className="-mt-4 flex flex-wrap gap-4" role="group" aria-label="아티스트 필터">
         {['전체', ...filters].map((filter) => (
-          <button
+          <ChipButton
             key={filter}
             type="button"
-            aria-pressed={selected === filter}
+            selected={selected === filter}
             onClick={() => setSelected(filter)}
-            className={cn(
-              'rounded-full px-8 py-3 typo-heading-h4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-line-focus',
-              selected === filter
-                ? 'bg-static-white text-primary-foreground'
-                : 'bg-background-elevated text-label-neutral hover:bg-interaction-hover',
-            )}
           >
             {filter}
-          </button>
+          </ChipButton>
         ))}
-        <button
+        <ChipButton
+          variant="add"
           type="button"
           aria-expanded={isAdding}
           aria-controls="add-artist"
@@ -65,11 +60,10 @@ export const ViewingListContent = () => {
             setIsAdding(!isAdding);
             setError('');
           }}
-          className="flex items-center gap-3 rounded-full border border-dashed border-line-normal px-8 py-3 typo-heading-h4 text-label-neutral"
         >
           <IconPlus className="size-6" />
           항목 추가
-        </button>
+        </ChipButton>
       </div>
       {isAdding && (
         <form id="add-artist" onSubmit={handleAddFilter} className="flex max-w-160 flex-col gap-3">
