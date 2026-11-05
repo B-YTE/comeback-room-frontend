@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import arrowUrl from '@/assets/mypage/arrow.svg';
 import editUrl from '@/assets/mypage/edit.svg';
 import { Button } from '@/shared/ui/Button';
@@ -7,14 +9,18 @@ import { cn } from '@/shared/utils/cn';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 const NAVIGATION_ITEMS = [
-  { title: '내 시청 목록', description: '지금까지 시청한 시청방을 확인해보세요.' },
-  { title: '내가 만든 시청방', description: '내가 만든 시청방을 확인해보세요.' },
+  {
+    title: '내 시청 목록',
+    description: '지금까지 시청한 시청방을 확인해보세요.',
+    to: '/mypage/viewing-list',
+  },
+  { title: '내가 만든 시청방', description: '내가 만든 시청방을 확인해보세요.', to: null },
 ];
 
 const SECTION_CLASS_NAME =
   'flex flex-col gap-10 rounded-extralarge border border-line-focus bg-background-surface p-6';
 
-// Figma GUI > 마이페이지 (333:603). API와 목록 경로 확정 전에는 개인 데이터를 표시하지 않는다.
+// Figma GUI > 마이페이지 (333:603). 계정 API 확정 전에는 개인 데이터를 표시하지 않는다.
 export const MyPageContent = () => {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
@@ -27,20 +33,28 @@ export const MyPageContent = () => {
 
       <div className="flex flex-col gap-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2" aria-describedby="mypage-notice">
-          {NAVIGATION_ITEMS.map(({ title, description }) => (
-            <button
-              key={title}
-              type="button"
-              disabled
-              className="flex min-w-0 items-center justify-between gap-3 rounded-extralarge border border-line-focus bg-background-surface p-5 text-left"
-            >
-              <span className="flex min-w-0 flex-col gap-1.5">
-                <span className="typo-heading-h3">{title}</span>
-                <span className="typo-title-20-regular text-label-neutral">{description}</span>
-              </span>
-              <img src={arrowUrl} alt="" className="shrink-0" />
-            </button>
-          ))}
+          {NAVIGATION_ITEMS.map(({ title, description, to }) => {
+            const content = (
+              <>
+                <span className="flex min-w-0 flex-col gap-1.5">
+                  <span className="typo-heading-h3">{title}</span>
+                  <span className="typo-title-20-regular text-label-neutral">{description}</span>
+                </span>
+                <img src={arrowUrl} alt="" className="shrink-0" />
+              </>
+            );
+            const className =
+              'flex min-w-0 items-center justify-between gap-3 rounded-extralarge border border-line-focus bg-background-surface p-5 text-left';
+            return to ? (
+              <Link key={title} to={to} className={className}>
+                {content}
+              </Link>
+            ) : (
+              <button key={title} type="button" disabled className={className}>
+                {content}
+              </button>
+            );
+          })}
         </div>
 
         <section className={cn(SECTION_CLASS_NAME, 'pb-16')} aria-labelledby="profile-title">
@@ -106,7 +120,7 @@ export const MyPageContent = () => {
           className="text-center typo-body-medium text-label-neutral"
         >
           {isLoggedIn
-            ? '계정 기능과 시청 목록을 준비 중입니다.'
+            ? '계정 기능과 내가 만든 시청방을 준비 중입니다.'
             : '로그인 및 사용자 정보 연동을 준비 중입니다.'}
         </p>
       </div>
