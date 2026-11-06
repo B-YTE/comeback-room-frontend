@@ -1,4 +1,4 @@
-import { type FormEvent } from 'react';
+import { type SubmitEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 import googleLogoUrl from '@/assets/google-logo.png';
@@ -11,7 +11,7 @@ const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1/oauth2/aut
 
 // Figma GUI > 1-1-1 로그인 (node 333:239)
 export const LoginForm = () => {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     // shortcut: 로그인 API 요청 본문·토큰 저장 방식이 명세에 없어 제출해도 아무 동작 안 함, 명세 확정 후 연결
   };
