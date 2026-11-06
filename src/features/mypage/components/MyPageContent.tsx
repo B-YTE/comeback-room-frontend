@@ -14,7 +14,11 @@ const NAVIGATION_ITEMS = [
     description: '지금까지 시청한 시청방을 확인해보세요.',
     to: '/mypage/viewing-list',
   },
-  { title: '내가 만든 시청방', description: '내가 만든 시청방을 확인해보세요.', to: null },
+  {
+    title: '내가 만든 시청방',
+    description: '내가 만든 시청방을 확인해보세요.',
+    to: '/mypage/created-rooms',
+  },
 ];
 
 const SECTION_CLASS_NAME =
@@ -120,7 +124,7 @@ export const MyPageContent = () => {
           className="text-center typo-body-medium text-label-neutral"
         >
           {isLoggedIn
-            ? '계정 기능과 내가 만든 시청방을 준비 중입니다.'
+            ? '계정 기능을 준비 중입니다.'
             : '로그인 및 사용자 정보 연동을 준비 중입니다.'}
         </p>
       </div>
