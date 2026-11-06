@@ -1,36 +1,15 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 
+import { ArtistFilter } from '@/features/room/components/ArtistFilter';
 import { ViewingRoomCard } from '@/features/room/components/ViewingRoomCard';
 import { useViewingList } from '@/features/room/hooks/useViewingList';
 import { Button } from '@/shared/ui/Button';
-import { ChipButton } from '@/shared/ui/Chip';
-import { TextField } from '@/shared/ui/TextField';
-import { IconPlus } from '@/shared/ui/icons';
-
-const INITIAL_FILTERS = ['에스파', '카리나', '아이브', '장원영'];
 
 export const ViewingListContent = () => {
   const { data: rooms = [], isPending, isError, refetch } = useViewingList();
-  const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [selected, setSelected] = useState('전체');
-  const [isAdding, setIsAdding] = useState(false);
-  const [error, setError] = useState('');
   const visibleRooms =
     selected === '전체' ? rooms : rooms.filter((room) => room.tags.includes(selected));
-
-  const handleAddFilter = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const value = new FormData(event.currentTarget).get('artist');
-    const artist = typeof value === 'string' ? value.trim() : '';
-    if (!artist || artist.length > 20 || artist === '전체' || filters.includes(artist)) {
-      setError('중복되지 않는 1~20자의 아티스트 이름을 입력해주세요.');
-      return;
-    }
-    setFilters([...filters, artist]);
-    setSelected(artist);
-    setIsAdding(false);
-    setError('');
-  };
 
   return (
     <div className="mt-17 mb-20 flex flex-col gap-10">
@@ -40,56 +19,7 @@ export const ViewingListContent = () => {
           함께했던 시청방의 순간을 다시 만나보세요.
         </p>
       </header>
-      <div className="-mt-4 flex flex-wrap gap-4" role="group" aria-label="아티스트 필터">
-        {['전체', ...filters].map((filter) => (
-          <ChipButton
-            key={filter}
-            type="button"
-            selected={selected === filter}
-            onClick={() => setSelected(filter)}
-          >
-            {filter}
-          </ChipButton>
-        ))}
-        <ChipButton
-          variant="add"
-          type="button"
-          aria-expanded={isAdding}
-          aria-controls="add-artist"
-          onClick={() => {
-            setIsAdding(!isAdding);
-            setError('');
-          }}
-        >
-          <IconPlus className="size-6" />
-          항목 추가
-        </ChipButton>
-      </div>
-      {isAdding && (
-        <form id="add-artist" onSubmit={handleAddFilter} className="flex max-w-160 flex-col gap-3">
-          <label htmlFor="artist" className="typo-body-large">
-            아티스트 이름 (현재 화면에서만 유지됩니다)
-          </label>
-          <div className="flex gap-3">
-            <TextField
-              autoFocus
-              id="artist"
-              name="artist"
-              maxLength={20}
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? 'artist-error' : undefined}
-            />
-            <Button type="submit" className="w-auto shrink-0">
-              추가
-            </Button>
-          </div>
-          {error && (
-            <p id="artist-error" role="alert" className="typo-body-medium text-status-negative">
-              {error}
-            </p>
-          )}
-        </form>
-      )}
+      <ArtistFilter selected={selected} onSelect={setSelected} />
       {isPending ? (
         <p role="status" className="py-16 typo-body-large">
           시청 목록을 불러오는 중입니다.
