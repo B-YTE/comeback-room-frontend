@@ -1,4 +1,4 @@
-import { useId, useState, type FormEvent } from 'react';
+import { useId, useState, type SubmitEvent } from 'react';
 
 import { Button } from '@/shared/ui/Button';
 import { ChipButton } from '@/shared/ui/Chip';
@@ -17,7 +17,7 @@ export const ArtistFilter = ({ selected, onSelect }: ArtistFilterProps) => {
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState('');
-  const handleAddFilter = (event: FormEvent<HTMLFormElement>) => {
+  const handleAddFilter = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const value = new FormData(event.currentTarget).get('artist');
     const artist = typeof value === 'string' ? value.trim() : '';

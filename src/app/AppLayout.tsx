@@ -10,9 +10,9 @@ export const AppLayout = () => {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <Navbar user={isLoggedIn ? { nickname: GUEST_NICKNAME } : null} />
-      <main className="mx-auto w-full max-w-480 px-16">
+      <main className="mx-auto flex w-full max-w-480 flex-1 flex-col px-16">
         <Outlet />
       </main>
     </div>
