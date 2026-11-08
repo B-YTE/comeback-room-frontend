@@ -1,4 +1,4 @@
-import { type FormEvent } from 'react';
+import { type SubmitEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AuthCard } from '@/features/auth/components/AuthCard';
@@ -10,7 +10,7 @@ import { TextFieldButton } from '@/shared/ui/TextFieldButton';
 export const FindPasswordForm = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     // shortcut: 비밀번호 재설정 요청 API(/api/v1/auth/password/reset-request) 미연동, 연동 시 응답 확인 후 이동
     navigate('/find-password/reset', { state: { verified: true } });

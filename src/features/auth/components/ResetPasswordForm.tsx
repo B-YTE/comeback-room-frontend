@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { AuthCard } from '@/features/auth/components/AuthCard';
@@ -17,7 +17,7 @@ export const ResetPasswordForm = () => {
   // 비밀번호 찾기를 거치지 않고 주소로 바로 들어오면 찾기 화면으로 돌려보낸다
   if (!verified) return <Navigate to="/find-password" replace />;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     if (formData.get('password') !== formData.get('passwordConfirm')) {
