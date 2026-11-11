@@ -1,7 +1,10 @@
-import { type SubmitEvent } from 'react';
+import { type MouseEvent, type SubmitEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { requestPasswordReset, verifyEmailCode } from '@/features/auth/api/auth';
 import { AuthCard } from '@/features/auth/components/AuthCard';
+import { type Feedback, FormMessage } from '@/features/auth/components/FormMessage';
+import { getErrorMessage } from '@/shared/api/getErrorMessage';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
 import { TextFieldButton } from '@/shared/ui/TextFieldButton';
@@ -9,15 +12,46 @@ import { TextFieldButton } from '@/shared/ui/TextFieldButton';
 // Figma GUI > 1-1-3 비밀번호 찾기 (node 333:836)
 export const FindPasswordForm = () => {
   const navigate = useNavigate();
+  const [emailFeedback, setEmailFeedback] = useState<Feedback | null>(null);
+  const [submitFeedback, setSubmitFeedback] = useState<Feedback | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // shortcut: 비밀번호 재설정 요청 API(/api/v1/auth/password/reset-request) 미연동, 연동 시 응답 확인 후 이동
-    navigate('/find-password/reset', { state: { verified: true } });
+    const formData = new FormData(event.currentTarget);
+    setIsPending(true);
+    try {
+      const { verificationToken } = await verifyEmailCode({
+        email: String(formData.get('email')),
+        verificationCode: String(formData.get('code')),
+        purpose: 'PASSWORD_RESET',
+      });
+      navigate('/find-password/reset', { state: { verificationToken } });
+    } catch (error) {
+      setSubmitFeedback({ text: getErrorMessage(error), isError: true });
+      setIsPending(false);
+    }
   };
 
-  const handleSendCode = () => {
-    // shortcut: 인증번호 발송 API 미연동, 아무 동작 안 함
+  // 명세상 재설정 요청 API가 아이디·이메일을 확인하고 인증코드를 발송한다
+  const handleSendCode = async (event: MouseEvent<HTMLButtonElement>) => {
+    const elements = event.currentTarget.form?.elements;
+    const loginIdInput = elements?.namedItem('loginId');
+    const emailInput = elements?.namedItem('email');
+    if (
+      !(loginIdInput instanceof HTMLInputElement) ||
+      !(emailInput instanceof HTMLInputElement) ||
+      !loginIdInput.reportValidity() ||
+      !emailInput.reportValidity()
+    ) {
+      return;
+    }
+    try {
+      await requestPasswordReset({ loginId: loginIdInput.value, email: emailInput.value });
+      setEmailFeedback({ text: '인증번호를 발송했습니다.', isError: false });
+    } catch (error) {
+      setEmailFeedback({ text: getErrorMessage(error), isError: true });
+    }
   };
 
   return (
@@ -54,6 +88,7 @@ export const FindPasswordForm = () => {
               />
               <TextFieldButton onClick={handleSendCode}>인증번호 발송</TextFieldButton>
             </div>
+            <FormMessage feedback={emailFeedback} />
           </div>
 
           <div className="flex flex-col gap-4">
@@ -68,10 +103,13 @@ export const FindPasswordForm = () => {
               placeholder="인증코드를 입력해주세요"
               required
             />
+            <FormMessage feedback={submitFeedback} />
           </div>
         </div>
 
-        <Button type="submit">비밀번호 찾기</Button>
+        <Button type="submit" disabled={isPending}>
+          비밀번호 찾기
+        </Button>
       </form>
     </AuthCard>
   );

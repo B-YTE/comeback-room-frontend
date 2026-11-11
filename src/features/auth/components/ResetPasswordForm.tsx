@@ -1,7 +1,10 @@
 import { type SubmitEvent, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
+import { resetPassword } from '@/features/auth/api/auth';
 import { AuthCard } from '@/features/auth/components/AuthCard';
+import { type Feedback, FormMessage } from '@/features/auth/components/FormMessage';
+import { getErrorMessage } from '@/shared/api/getErrorMessage';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
 
@@ -11,21 +14,32 @@ const PASSWORD_PATTERN = '(?=.*[A-Za-z])(?=.*\\d).{8,}';
 // Figma GUI > 1-1-3-1 비밀번호 재설정 (node 333:863)
 export const ResetPasswordForm = () => {
   const navigate = useNavigate();
-  const verified = (useLocation().state as { verified?: boolean } | null)?.verified;
+  const verificationToken = (useLocation().state as { verificationToken?: string } | null)
+    ?.verificationToken;
   const [isMismatch, setIsMismatch] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
-  // 비밀번호 찾기를 거치지 않고 주소로 바로 들어오면 찾기 화면으로 돌려보낸다
-  if (!verified) return <Navigate to="/find-password" replace />;
+  // 비밀번호 찾기에서 이메일 인증을 거치지 않고 주소로 바로 들어오면 찾기 화면으로 돌려보낸다
+  if (!verificationToken) return <Navigate to="/find-password" replace />;
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    if (formData.get('password') !== formData.get('passwordConfirm')) {
+    const newPassword = String(formData.get('password'));
+    const newPasswordConfirm = String(formData.get('passwordConfirm'));
+    if (newPassword !== newPasswordConfirm) {
       setIsMismatch(true);
       return;
     }
-    // shortcut: 비밀번호 재설정 API(/api/v1/auth/password/reset) 미연동, 연동 시 성공 응답 후 이동
-    navigate('/login', { replace: true });
+    setIsPending(true);
+    try {
+      await resetPassword({ verificationToken, newPassword, newPasswordConfirm });
+      navigate('/login', { replace: true });
+    } catch (error) {
+      setFeedback({ text: getErrorMessage(error), isError: true });
+      setIsPending(false);
+    }
   };
 
   return (
@@ -74,10 +88,13 @@ export const ResetPasswordForm = () => {
                 비밀번호가 일치하지 않습니다.
               </p>
             )}
+            <FormMessage feedback={feedback} />
           </div>
         </div>
 
-        <Button type="submit">비밀번호 재설정</Button>
+        <Button type="submit" disabled={isPending}>
+          비밀번호 재설정
+        </Button>
       </form>
     </AuthCard>
   );
