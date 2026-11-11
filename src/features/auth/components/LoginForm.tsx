@@ -1,19 +1,42 @@
-import { type SubmitEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { type SubmitEvent, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import googleLogoUrl from '@/assets/google-logo.png';
 import logoWordmarkUrl from '@/assets/logo-wordmark.svg';
+import { login } from '@/features/auth/api/auth';
 import { AuthCard } from '@/features/auth/components/AuthCard';
+import { type Feedback, FormMessage } from '@/features/auth/components/FormMessage';
+import { getErrorMessage } from '@/shared/api/getErrorMessage';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1/oauth2/authorization/google`;
 
 // Figma GUI > 1-1-1 로그인 (node 333:239)
 export const LoginForm = () => {
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [isPending, setIsPending] = useState(false);
+
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // shortcut: 로그인 API 요청 본문·토큰 저장 방식이 명세에 없어 제출해도 아무 동작 안 함, 명세 확정 후 연결
+    const formData = new FormData(event.currentTarget);
+    setIsPending(true);
+    try {
+      const { accessToken } = await login({
+        loginId: String(formData.get('loginId')),
+        password: String(formData.get('password')),
+      });
+      // axios 인터셉터가 localStorage의 accessToken을 읽는다
+      localStorage.setItem('accessToken', accessToken);
+      setIsLoggedIn(true);
+      navigate('/', { replace: true });
+    } catch (error) {
+      setFeedback({ text: getErrorMessage(error), isError: true });
+      setIsPending(false);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -59,6 +82,7 @@ export const LoginForm = () => {
                   required
                 />
               </div>
+              <FormMessage feedback={feedback} />
               <p className="self-end typo-body-medium text-label-neutral">
                 <Link to="/find-id">아이디</Link> / <Link to="/find-password">비밀번호 찾기</Link>
               </p>
@@ -66,7 +90,9 @@ export const LoginForm = () => {
           </div>
 
           <div className="flex flex-col gap-4">
-            <Button type="submit">로그인</Button>
+            <Button type="submit" disabled={isPending}>
+              로그인
+            </Button>
             <Button variant="secondary" onClick={handleGoogleLogin}>
               <img src={googleLogoUrl} alt="" className="size-9" />
               구글 로그인
