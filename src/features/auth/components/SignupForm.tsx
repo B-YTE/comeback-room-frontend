@@ -1,7 +1,14 @@
-import { type SubmitEvent, useState } from 'react';
+import { type MouseEvent, type SubmitEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import {
+  checkNicknameAvailability,
+  sendEmailCode,
+  verifyEmailCode,
+} from '@/features/auth/api/auth';
 import { AuthCard } from '@/features/auth/components/AuthCard';
+import { type Feedback, FormMessage } from '@/features/auth/components/FormMessage';
+import { getErrorMessage } from '@/shared/api/getErrorMessage';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
 import { TextFieldButton } from '@/shared/ui/TextFieldButton';
@@ -13,6 +20,9 @@ const PASSWORD_PATTERN = '(?=.*[A-Za-z])(?=.*\\d).{8,}';
 export const SignupForm = () => {
   const navigate = useNavigate();
   const [isMismatch, setIsMismatch] = useState(false);
+  const [emailFeedback, setEmailFeedback] = useState<Feedback | null>(null);
+  const [codeFeedback, setCodeFeedback] = useState<Feedback | null>(null);
+  const [nicknameFeedback, setNicknameFeedback] = useState<Feedback | null>(null);
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,14 +31,58 @@ export const SignupForm = () => {
       setIsMismatch(true);
       return;
     }
-    // shortcut: 회원가입 API(/api/v1/auth/sign-up) 미연동, 연동 시 성공 응답 후 이동
+    // shortcut: 회원가입 API는 loginId·약관 동의가 필수인데 화면에 해당 항목이 없어 미연동, 백엔드·디자인과 항목을 맞춘 뒤 연결
     navigate('/login', { replace: true });
   };
 
-  // shortcut: 이메일 발송·인증, 닉네임 중복 확인 API 미연동이라 아무 동작 안 함, 연동 시 연결
-  const handleSendCode = () => {};
-  const handleVerifyCode = () => {};
-  const handleCheckNickname = () => {};
+  // 버튼이 속한 폼에서 입력값을 꺼내고, 비어 있거나 형식이 틀리면 브라우저 검증 문구를 띄운다
+  const getValidInput = (event: MouseEvent<HTMLButtonElement>, name: string) => {
+    const input = event.currentTarget.form?.elements.namedItem(name);
+    return input instanceof HTMLInputElement && input.reportValidity() ? input : null;
+  };
+
+  const handleSendCode = async (event: MouseEvent<HTMLButtonElement>) => {
+    const emailInput = getValidInput(event, 'email');
+    if (!emailInput) return;
+    try {
+      await sendEmailCode({ email: emailInput.value, purpose: 'SIGN_UP' });
+      setEmailFeedback({ text: '인증번호를 발송했습니다.', isError: false });
+    } catch (error) {
+      setEmailFeedback({ text: getErrorMessage(error), isError: true });
+    }
+  };
+
+  // shortcut: 받은 verificationToken은 회원가입 API 연동 때 상태로 보관해 제출에 사용
+  const handleVerifyCode = async (event: MouseEvent<HTMLButtonElement>) => {
+    const emailInput = getValidInput(event, 'email');
+    const codeInput = emailInput && getValidInput(event, 'code');
+    if (!emailInput || !codeInput) return;
+    try {
+      await verifyEmailCode({
+        email: emailInput.value,
+        verificationCode: codeInput.value,
+        purpose: 'SIGN_UP',
+      });
+      setCodeFeedback({ text: '이메일 인증이 완료되었습니다.', isError: false });
+    } catch (error) {
+      setCodeFeedback({ text: getErrorMessage(error), isError: true });
+    }
+  };
+
+  const handleCheckNickname = async (event: MouseEvent<HTMLButtonElement>) => {
+    const nicknameInput = getValidInput(event, 'nickname');
+    if (!nicknameInput) return;
+    try {
+      const { available } = await checkNicknameAvailability(nicknameInput.value);
+      setNicknameFeedback(
+        available
+          ? { text: '사용 가능한 닉네임입니다.', isError: false }
+          : { text: '이미 사용 중인 닉네임입니다.', isError: true },
+      );
+    } catch (error) {
+      setNicknameFeedback({ text: getErrorMessage(error), isError: true });
+    }
+  };
 
   return (
     <AuthCard>
@@ -56,6 +110,7 @@ export const SignupForm = () => {
               />
               <TextFieldButton onClick={handleSendCode}>인증번호 발송</TextFieldButton>
             </div>
+            <FormMessage feedback={emailFeedback} />
           </div>
 
           <div className="flex flex-col gap-4">
@@ -73,6 +128,7 @@ export const SignupForm = () => {
               />
               <TextFieldButton onClick={handleVerifyCode}>인증하기</TextFieldButton>
             </div>
+            <FormMessage feedback={codeFeedback} />
           </div>
 
           <div className="flex flex-col gap-4">
@@ -89,6 +145,7 @@ export const SignupForm = () => {
               />
               <TextFieldButton onClick={handleCheckNickname}>중복 확인</TextFieldButton>
             </div>
+            <FormMessage feedback={nicknameFeedback} />
           </div>
 
           <div className="flex flex-col gap-4">
