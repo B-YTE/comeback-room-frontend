@@ -4,6 +4,7 @@ import arrowUrl from '@/assets/mypage/arrow.svg';
 import editUrl from '@/assets/mypage/edit.svg';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
+import { TextFieldButton } from '@/shared/ui/TextFieldButton';
 import { IconMyStroke } from '@/shared/ui/icons';
 import { cn } from '@/shared/utils/cn';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -92,9 +93,12 @@ export const MyPageContent = () => {
                   aria-describedby="nickname-help mypage-notice"
                   className="h-15 min-w-0 flex-1 typo-heading-regular"
                 />
-                <Button disabled variant="secondary" className="h-15 w-full shrink-0 sm:w-42.5">
+                <TextFieldButton
+                  disabled
+                  className="h-15 w-full disabled:bg-label-normal disabled:text-background-base sm:w-42.5"
+                >
                   닉네임 수정
-                </Button>
+                </TextFieldButton>
               </div>
               <p id="nickname-help" className="typo-title-20-regular text-label-neutral">
                 2-10자의 한글, 영문, 숫자를 사용할 수 있습니다.
