@@ -1,6 +1,7 @@
+import type { RoomEntryTarget } from '@/features/room/types/roomEntry';
+
 // 시청 이력과 별개인 생성 시청방의 화면용 모델. 실제 API 명세가 아니다.
-export interface CreatedRoom {
-  id: string;
+export interface CreatedRoom extends RoomEntryTarget {
   title: string;
   subtitle: string;
   thumbnail: string;
@@ -9,5 +10,4 @@ export interface CreatedRoom {
   startsAt: string;
   status: 'live' | 'ended' | 'scheduled';
   showPrivateRoom?: boolean;
-  entryCode?: string;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 
+import { cn } from '@/shared/utils/cn';
 import { IconClose } from '@/shared/ui/icons';
 
 interface DialogProps {
@@ -7,10 +8,21 @@ interface DialogProps {
   description: string;
   onClose: () => void;
   children: ReactNode;
+  className?: string;
+  contentClassName?: string;
+  headerClassName?: string;
 }
 
 // Figma 항목 추가/삭제 팝업 공통 프레임. Native dialog가 focus trap과 배경 inert를 처리한다.
-export const Dialog = ({ title, description, onClose, children }: DialogProps) => {
+export const Dialog = ({
+  title,
+  description,
+  onClose,
+  children,
+  className,
+  contentClassName,
+  headerClassName,
+}: DialogProps) => {
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
   useEffect(() => {
@@ -52,7 +64,10 @@ export const Dialog = ({ title, description, onClose, children }: DialogProps) =
           first?.focus();
         }
       }}
-      className="fixed inset-0 m-auto max-h-[90dvh] w-175 max-w-[calc(100%_-_2rem)] overflow-y-auto rounded-extralarge border border-line-normal bg-background-surface px-6 py-16 text-label-normal backdrop:bg-background-scrim sm:px-20 sm:py-24"
+      className={cn(
+        'fixed inset-0 m-auto max-h-[90dvh] w-175 max-w-[calc(100%_-_2rem)] overflow-y-auto rounded-extralarge border border-line-normal bg-background-surface px-6 py-16 text-label-normal backdrop:bg-background-scrim sm:px-20 sm:py-24',
+        className,
+      )}
     >
       <button
         type="button"
@@ -62,8 +77,8 @@ export const Dialog = ({ title, description, onClose, children }: DialogProps) =
       >
         <IconClose className="size-8" />
       </button>
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-5 text-center">
+      <div className={cn('flex flex-col gap-8', contentClassName)}>
+        <div className={cn('flex flex-col gap-5 text-center', headerClassName)}>
           <h2 id={`${id}-title`} className="typo-heading-h1 text-label-strong">
             {title}
           </h2>
