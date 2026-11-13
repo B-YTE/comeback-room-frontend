@@ -5,6 +5,7 @@ interface RoomCardActionsProps {
   isPrivate: boolean;
   entryCode?: string;
   onDelete: () => void;
+  deletable?: boolean;
 }
 
 export const RoomCardActions = ({
@@ -12,6 +13,7 @@ export const RoomCardActions = ({
   isPrivate,
   entryCode,
   onDelete,
+  deletable = true,
 }: RoomCardActionsProps) => (
   <>
     {isPrivate && entryCode && (
@@ -21,6 +23,7 @@ export const RoomCardActions = ({
     )}
     <button
       type="button"
+      disabled={!deletable}
       aria-label={`${title} 삭제`}
       onClick={(event) => {
         event.stopPropagation();

@@ -11,7 +11,9 @@ interface RoomEntryDialogProps {
   state: RoomEntryDialogState;
   onClose: () => void;
   onSubscribe: () => void;
-  onEnter: () => void;
+  onEnter: (code: string) => void;
+  isPending?: boolean;
+  error?: string;
 }
 
 const formatOpensAt = (value: string) => {
@@ -29,7 +31,14 @@ const formatOpensAt = (value: string) => {
 };
 
 // Figma 570:5908/5909/5910, 802:2744. 버튼은 기존 primary/secondary를 재사용한다.
-export const RoomEntryDialog = ({ state, onClose, onSubscribe, onEnter }: RoomEntryDialogProps) => {
+export const RoomEntryDialog = ({
+  state,
+  onClose,
+  onSubscribe,
+  onEnter,
+  isPending = false,
+  error = '',
+}: RoomEntryDialogProps) => {
   const id = useId();
   const [isInvalid, setIsInvalid] = useState(false);
   const isCode = state.kind === 'code';
@@ -49,13 +58,11 @@ export const RoomEntryDialog = ({ state, onClose, onSubscribe, onEnter }: RoomEn
     event.preventDefault();
     if (state.kind !== 'code') return;
     const code = new FormData(event.currentTarget).get('entryCode');
-    // 길이/문자 정책은 확정하지 않고 fixture와 정확히 비교한다. 없는 코드는 통과시키지 않는다.
-    if (!state.expectedCode || code !== state.expectedCode) {
+    if (typeof code !== 'string' || !/^\d{4,10}$/.test(code)) {
       setIsInvalid(true);
-      event.currentTarget.querySelector('input')?.focus();
       return;
     }
-    onEnter();
+    onEnter(code);
   };
 
   return (
@@ -71,6 +78,11 @@ export const RoomEntryDialog = ({ state, onClose, onSubscribe, onEnter }: RoomEn
       headerClassName={cn('break-keep', !isCode && 'mx-auto w-full max-w-114.25')}
       contentClassName={isFull ? 'gap-12' : state.kind === 'subscribe' ? 'gap-20' : undefined}
     >
+      {error && (
+        <p role="alert" className="typo-body-medium text-status-negative">
+          {error}
+        </p>
+      )}
       {isCode ? (
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
           <TextField
@@ -80,11 +92,13 @@ export const RoomEntryDialog = ({ state, onClose, onSubscribe, onEnter }: RoomEn
             placeholder="초대코드를 입력해주세요."
             required
             data-dialog-autofocus
-            aria-invalid={isInvalid}
+            aria-invalid={isInvalid || Boolean(error)}
             onChange={() => setIsInvalid(false)}
             className={cn(isInvalid && 'border-status-negative focus:border-status-negative')}
           />
-          <Button type="submit">확인</Button>
+          <Button type="submit" disabled={isPending}>
+            확인
+          </Button>
         </form>
       ) : isSubscribed ? (
         <>
@@ -107,7 +121,7 @@ export const RoomEntryDialog = ({ state, onClose, onSubscribe, onEnter }: RoomEn
           </Button>
         </>
       ) : (
-        <Button data-dialog-autofocus onClick={isFull ? onClose : onSubscribe}>
+        <Button data-dialog-autofocus disabled={isPending} onClick={isFull ? onClose : onSubscribe}>
           {isFull ? '다른 신청방 둘러보기' : '알림 신청하기'}
         </Button>
       )}

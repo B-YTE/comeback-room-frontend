@@ -89,12 +89,16 @@ export const ViewingListContent = () => {
         </p>
       )}
       <div ref={sentinel} aria-hidden="true" className="h-1" />
+      {entry.isPending && !entry.dialog && <p role="status">시청방 정보를 확인하는 중입니다.</p>}
+      {entry.error && !entry.dialog && <p role="alert">{entry.error}</p>}
       {entry.dialog && (
         <RoomEntryDialog
           state={entry.dialog}
           onClose={entry.handleClose}
           onSubscribe={entry.handleSubscribe}
           onEnter={entry.handleEnter}
+          isPending={entry.isPending}
+          error={entry.error}
         />
       )}
       {deleting && (
@@ -108,8 +112,9 @@ export const ViewingListContent = () => {
         />
       )}
       <p className="typo-body-medium text-label-assistive">
-        {import.meta.env.DEV ? '개발용 예시 목록입니다. ' : ''}실제 시청 목록과 시청방 이동 기능은
-        서버 연동 후 제공됩니다.
+        {import.meta.env.DEV
+          ? '개발용 예시 목록입니다. 목록 제거는 이 화면에만 적용됩니다.'
+          : '시청 기록 조회는 서버 구현을 기다리고 있습니다.'}
       </p>
     </div>
   );

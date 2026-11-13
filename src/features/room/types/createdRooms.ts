@@ -1,7 +1,8 @@
 import type { RoomEntryTarget } from '@/features/room/types/roomEntry';
 
-// 시청 이력과 별개인 생성 시청방의 화면용 모델. 실제 API 명세가 아니다.
+// API DTO를 카드 표시 구조로 변환한 화면용 모델.
 export interface CreatedRoom extends RoomEntryTarget {
+  deletable: boolean;
   title: string;
   subtitle: string;
   thumbnail: string;

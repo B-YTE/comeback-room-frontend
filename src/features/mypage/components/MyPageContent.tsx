@@ -1,3 +1,7 @@
+import { useState } from 'react';
+import { isAxiosError } from 'axios';
+import { useProfile } from '@/features/mypage/hooks/useProfile';
+import { getErrorMessage } from '@/shared/api/getErrorMessage';
 import { Link } from 'react-router-dom';
 
 import arrowUrl from '@/assets/mypage/arrow.svg';
@@ -25,8 +29,12 @@ const NAVIGATION_ITEMS = [
 const SECTION_CLASS_NAME =
   'flex flex-col gap-10 rounded-extralarge border border-line-focus bg-background-surface p-6';
 
-// Figma GUI > 마이페이지 (333:603). 계정 API 확정 전에는 개인 데이터를 표시하지 않는다.
+// Figma GUI > 마이페이지 (333:603). 프로필 API는 개발용 MSW를 사용한다.
 export const MyPageContent = () => {
+  const { profile, nickname } = useProfile();
+  const [draft, setDraft] = useState<string | null>(null);
+  const value = draft ?? profile.data?.nickname ?? '';
+  const valid = /^[가-힣a-zA-Z0-9]{2,10}$/.test(value);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   return (
@@ -69,7 +77,15 @@ export const MyPageContent = () => {
           <div className="flex flex-col items-center gap-8 px-4 sm:flex-row sm:gap-16 sm:px-8">
             <div className="relative shrink-0">
               <div className="flex size-45 items-center justify-center rounded-full bg-background-elevated">
-                <IconMyStroke className="size-20 text-label-neutral" aria-hidden="true" />
+                {profile.data?.profileImageUrl ? (
+                  <img
+                    src={profile.data.profileImageUrl}
+                    alt="프로필"
+                    className="size-full rounded-full object-cover"
+                  />
+                ) : (
+                  <IconMyStroke className="size-20 text-label-neutral" aria-hidden="true" />
+                )}
               </div>
               <button
                 type="button"
@@ -88,13 +104,24 @@ export const MyPageContent = () => {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <TextField
                   id="mypage-nickname"
-                  placeholder="사용자 정보 연동 준비 중"
-                  disabled
+                  placeholder={profile.isPending ? '불러오는 중' : '닉네임'}
+                  value={value}
+                  onChange={(event) => {
+                    setDraft(event.target.value);
+                    nickname.reset();
+                  }}
+                  disabled={!profile.data || nickname.isPending}
                   aria-describedby="nickname-help mypage-notice"
                   className="h-15 min-w-0 flex-1 typo-heading-regular"
                 />
                 <TextFieldButton
-                  disabled
+                  disabled={
+                    !profile.data || !valid || nickname.isPending || value === profile.data.nickname
+                  }
+                  onClick={() => {
+                    if (valid && !nickname.isPending)
+                      nickname.mutate({ nickname: value }, { onSuccess: () => setDraft(null) });
+                  }}
                   className="h-15 w-full disabled:bg-label-normal disabled:text-background-base sm:w-42.5"
                 >
                   닉네임 수정
@@ -134,9 +161,26 @@ export const MyPageContent = () => {
           role="status"
           className="text-center typo-body-medium text-label-neutral"
         >
-          {isLoggedIn
-            ? '계정 기능을 준비 중입니다.'
-            : '로그인 및 사용자 정보 연동을 준비 중입니다.'}
+          {profile.isPending
+            ? '프로필을 불러오는 중입니다.'
+            : profile.isError
+              ? profile.error instanceof Error && !isAxiosError(profile.error)
+                ? profile.error.message
+                : getErrorMessage(profile.error)
+              : nickname.isError
+                ? getErrorMessage(nickname.error)
+                : nickname.isSuccess
+                  ? '닉네임이 수정되었습니다. 개발용 변경은 서버에 저장되지 않습니다.'
+                  : import.meta.env.DEV
+                    ? '개발용 예시 프로필입니다. 변경 사항은 실제 서버에 저장되지 않습니다.'
+                    : isLoggedIn
+                      ? '계정 기능을 준비 중입니다.'
+                      : '로그인이 필요합니다.'}
+          {profile.isError && (
+            <button type="button" onClick={() => void profile.refetch()}>
+              다시 시도
+            </button>
+          )}
         </p>
       </div>
     </div>

@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deleteCreatedRoom } from '@/features/room/api/createdRooms';
+import { getErrorMessage } from '@/shared/api/getErrorMessage';
 
 import { RoomEntryDialog } from '@/features/room/components/RoomEntryDialog';
 import { useRoomEntry } from '@/features/room/hooks/useRoomEntry';
@@ -11,7 +14,6 @@ import { Button } from '@/shared/ui/Button';
 import { Pagination } from '@/shared/ui/Pagination';
 import { Playlist } from '@/shared/ui/Playlist';
 
-const PAGE_SIZE = 5;
 const DATE_FORMAT = new Intl.DateTimeFormat('ko-KR', {
   timeZone: 'Asia/Seoul',
   year: 'numeric',
@@ -27,19 +29,22 @@ const TIME_FORMAT = new Intl.DateTimeFormat('ko-KR', {
 
 export const CreatedRoomsContent = () => {
   const entry = useRoomEntry();
-  const { data: rooms = [], isPending, isError, refetch } = useCreatedRooms();
-  const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [deleting, setDeleting] = useState<CreatedRoom | null>(null);
-  const remainingRooms = rooms.filter((room) => !deletedIds.includes(room.id));
   const [selected, setSelected] = useState('전체');
   const [page, setPage] = useState(1);
-  const filteredRooms =
-    selected === '전체'
-      ? remainingRooms
-      : remainingRooms.filter((room) => room.tags.includes(selected));
-  const pageCount = Math.ceil(filteredRooms.length / PAGE_SIZE);
-  const currentPage = Math.min(page, Math.max(1, pageCount));
-  const visibleRooms = filteredRooms.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const client = useQueryClient();
+  const { data, isPending, isError, refetch } = useCreatedRooms(selected, page - 1);
+  const pageCount = data?.totalPages ?? 0;
+  const currentPage = page;
+  const visibleRooms = data?.rooms ?? [];
+  const deletion = useMutation({
+    mutationFn: deleteCreatedRoom,
+    onSuccess: async () => {
+      setDeleting(null);
+      if (visibleRooms.length === 1 && page > 1) setPage(page - 1);
+      await client.invalidateQueries({ queryKey: ['created-rooms'] });
+    },
+  });
 
   return (
     <div className="mt-17 mb-20 flex flex-col gap-10">
@@ -69,7 +74,7 @@ export const CreatedRoomsContent = () => {
             다시 시도
           </Button>
         </div>
-      ) : filteredRooms.length === 0 ? (
+      ) : visibleRooms.length === 0 ? (
         <p role="status" className="py-16 text-center typo-heading-h4 text-label-neutral">
           {selected === '전체'
             ? '아직 만든 시청방이 없습니다.'
@@ -88,7 +93,12 @@ export const CreatedRoomsContent = () => {
                       title={room.title}
                       isPrivate={Boolean(room.showPrivateRoom)}
                       entryCode={room.entryCode}
-                      onDelete={() => setDeleting(room)}
+                      deletable={room.deletable && !deletion.isPending}
+                      onDelete={() => {
+                        if (deletion.isPending) return;
+                        deletion.reset();
+                        setDeleting(room);
+                      }}
                     />
                   }
                   dateTime={room.startsAt}
@@ -103,27 +113,33 @@ export const CreatedRoomsContent = () => {
           </div>
         </>
       )}
+      {entry.isPending && !entry.dialog && <p role="status">시청방 정보를 확인하는 중입니다.</p>}
+      {entry.error && !entry.dialog && <p role="alert">{entry.error}</p>}
       {entry.dialog && (
         <RoomEntryDialog
           state={entry.dialog}
           onClose={entry.handleClose}
           onSubscribe={entry.handleSubscribe}
           onEnter={entry.handleEnter}
+          isPending={entry.isPending}
+          error={entry.error}
         />
       )}
       {deleting && (
         <DeleteRoomDialog
           title={deleting.title}
           onClose={() => setDeleting(null)}
+          isPending={deletion.isPending}
+          error={deletion.isError ? getErrorMessage(deletion.error) : undefined}
           onConfirm={() => {
-            setDeletedIds((ids) => [...ids, deleting.id]);
-            setDeleting(null);
+            if (!deletion.isPending && deleting.deletable) deletion.mutate(deleting.id);
           }}
         />
       )}
       <p className="typo-body-medium text-label-assistive">
-        {import.meta.env.DEV ? '개발용 예시 목록입니다. ' : ''}실제 생성한 시청방 조회와 시청방 이동
-        기능은 서버 연동 후 제공됩니다.
+        {import.meta.env.DEV
+          ? '개발용 예시 목록입니다. 변경 사항은 실제 서버에 저장되지 않습니다.'
+          : '생성한 시청방 조회는 서버 구현을 기다리고 있습니다.'}
       </p>
     </div>
   );
