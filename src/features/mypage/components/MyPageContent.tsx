@@ -4,6 +4,7 @@ import arrowUrl from '@/assets/mypage/arrow.svg';
 import editUrl from '@/assets/mypage/edit.svg';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
+import { TextFieldButton } from '@/shared/ui/TextFieldButton';
 import { IconMyStroke } from '@/shared/ui/icons';
 import { cn } from '@/shared/utils/cn';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -48,7 +49,7 @@ export const MyPageContent = () => {
               </>
             );
             const className =
-              'flex min-w-0 items-center justify-between gap-3 rounded-extralarge border border-line-focus bg-background-surface p-5 text-left';
+              'flex min-w-0 items-center justify-between gap-3 rounded-extralarge border border-line-focus bg-background-surface p-5 text-left hover:bg-interaction-selected focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-line-focus';
             return to ? (
               <Link key={title} to={to} className={className}>
                 {content}
@@ -92,9 +93,12 @@ export const MyPageContent = () => {
                   aria-describedby="nickname-help mypage-notice"
                   className="h-15 min-w-0 flex-1 typo-heading-regular"
                 />
-                <Button disabled variant="secondary" className="h-15 w-full shrink-0 sm:w-42.5">
+                <TextFieldButton
+                  disabled
+                  className="h-15 w-full disabled:bg-label-normal disabled:text-background-base sm:w-42.5"
+                >
                   닉네임 수정
-                </Button>
+                </TextFieldButton>
               </div>
               <p id="nickname-help" className="typo-title-20-regular text-label-neutral">
                 2-10자의 한글, 영문, 숫자를 사용할 수 있습니다.
@@ -111,8 +115,15 @@ export const MyPageContent = () => {
             className="mx-auto flex w-full max-w-134.5 flex-col gap-4"
             aria-describedby="mypage-notice"
           >
-            <Button disabled>로그아웃</Button>
-            <Button disabled variant="secondary">
+            {/* API 준비 전 비활성 동작을 유지하되 Figma의 계정 버튼 색상을 표시한다. */}
+            <Button disabled className="disabled:bg-primary-normal disabled:text-label-strong">
+              로그아웃
+            </Button>
+            <Button
+              disabled
+              variant="secondary"
+              className="disabled:bg-background-elevated disabled:text-label-normal"
+            >
               회원 탈퇴
             </Button>
           </div>
