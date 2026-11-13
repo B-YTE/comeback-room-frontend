@@ -48,7 +48,7 @@ export const MyPageContent = () => {
               </>
             );
             const className =
-              'flex min-w-0 items-center justify-between gap-3 rounded-extralarge border border-line-focus bg-background-surface p-5 text-left';
+              'flex min-w-0 items-center justify-between gap-3 rounded-extralarge border border-line-focus bg-background-surface p-5 text-left hover:bg-interaction-selected focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-line-focus';
             return to ? (
               <Link key={title} to={to} className={className}>
                 {content}
@@ -111,8 +111,15 @@ export const MyPageContent = () => {
             className="mx-auto flex w-full max-w-134.5 flex-col gap-4"
             aria-describedby="mypage-notice"
           >
-            <Button disabled>로그아웃</Button>
-            <Button disabled variant="secondary">
+            {/* API 준비 전 비활성 동작을 유지하되 Figma의 계정 버튼 색상을 표시한다. */}
+            <Button disabled className="disabled:bg-primary-normal disabled:text-label-strong">
+              로그아웃
+            </Button>
+            <Button
+              disabled
+              variant="secondary"
+              className="disabled:bg-background-elevated disabled:text-label-normal"
+            >
               회원 탈퇴
             </Button>
           </div>
