@@ -19,6 +19,7 @@ export const createdRooms: CreatedRoom[] = Array.from({ length: 25 }, (_, index)
   id: `created-preview-${index + 1}`,
   title: index < 5 ? '드디어 컴백한다는 그 날' : `함께 보는 컴백 예시 ${index + 1}`,
   subtitle: '[aespa] Whiplash Stage 컴백 같이 봤어요.',
+  entryCode: index === 0 ? '0000' : undefined,
   duration: '3:12',
   startsAt: '2026-09-23T15:20:00+09:00',
 }));

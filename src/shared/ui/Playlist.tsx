@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
 import lockUrl from '@/assets/viewing-list/lock.svg';
 import { Chip } from '@/shared/ui/Chip';
@@ -16,6 +16,7 @@ interface PlaylistProps {
   time: string;
   status: ComponentProps<typeof StatusBadge>['status'];
   showPrivateRoom?: boolean;
+  actions?: ReactNode;
 }
 
 // Figma GUI > component > Playlist (568:5771)
@@ -31,12 +32,14 @@ export const Playlist = ({
   time,
   status,
   showPrivateRoom = false,
+  actions,
 }: PlaylistProps) => {
   return (
     <article
+      tabIndex={0}
       className={cn(
-        'flex min-w-0 flex-col gap-8 rounded-extralarge border border-line-normal bg-background-surface p-6 sm:flex-row sm:items-center',
-        status === 'live' && 'border-line-focus',
+        'flex min-w-0 flex-col gap-8 rounded-extralarge border border-line-normal bg-background-surface p-6 lg:flex-row lg:items-center',
+        'hover:border-line-focus active:border-line-focus focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-line-focus',
       )}
     >
       <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-large sm:w-94">
@@ -64,12 +67,13 @@ export const Playlist = ({
           ))}
         </ul>
       </div>
-      <div className="flex shrink-0 flex-col gap-3 sm:ml-auto sm:h-52.75 sm:items-end sm:py-4.5">
+      <div className="flex shrink-0 flex-col gap-3 lg:ml-auto lg:min-h-52.75 lg:items-end lg:py-4.5">
         <time dateTime={dateTime} className="flex gap-5 typo-heading-h4 text-label-assistive">
           <span>{date}</span>
           <span>{time}</span>
         </time>
         <StatusBadge status={status} />
+        {actions && <div className="mt-auto flex flex-wrap items-center gap-3 pt-3">{actions}</div>}
       </div>
     </article>
   );

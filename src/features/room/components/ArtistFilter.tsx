@@ -2,6 +2,7 @@ import { useId, useState, type SubmitEvent } from 'react';
 
 import { Button } from '@/shared/ui/Button';
 import { ChipButton } from '@/shared/ui/Chip';
+import { Dialog } from '@/shared/ui/Dialog';
 import { TextField } from '@/shared/ui/TextField';
 import { IconPlus } from '@/shared/ui/icons';
 
@@ -48,7 +49,7 @@ export const ArtistFilter = ({ selected, onSelect }: ArtistFilterProps) => {
           variant="add"
           type="button"
           aria-expanded={isAdding}
-          aria-controls={`${id}-add`}
+          aria-haspopup="dialog"
           onClick={() => {
             setIsAdding(!isAdding);
             setError('');
@@ -59,29 +60,35 @@ export const ArtistFilter = ({ selected, onSelect }: ArtistFilterProps) => {
         </ChipButton>
       </div>
       {isAdding && (
-        <form id={`${id}-add`} onSubmit={handleAddFilter} className="flex max-w-160 flex-col gap-3">
-          <label htmlFor={`${id}-artist`} className="typo-body-large">
-            아티스트 이름 (현재 화면에서만 유지됩니다)
-          </label>
-          <div className="flex gap-3">
+        <Dialog
+          title="항목 추가"
+          description="시청 목록을 필터링할 해시태그를 추가해보세요."
+          onClose={() => setIsAdding(false)}
+        >
+          <form id={`${id}-add`} onSubmit={handleAddFilter} className="flex flex-col gap-8">
             <TextField
-              autoFocus
+              data-dialog-autofocus
               id={`${id}-artist`}
+              aria-label="아티스트 이름"
+              placeholder="# 추가할 해시태그를 입력해주세요."
               name="artist"
               maxLength={20}
               aria-invalid={Boolean(error)}
               aria-describedby={error ? `${id}-error` : undefined}
             />
-            <Button type="submit" className="w-auto shrink-0">
-              추가
-            </Button>
-          </div>
-          {error && (
-            <p id={`${id}-error`} role="alert" className="typo-body-medium text-status-negative">
-              {error}
-            </p>
-          )}
-        </form>
+            {error && (
+              <p id={`${id}-error`} role="alert" className="typo-body-medium text-status-negative">
+                {error}
+              </p>
+            )}
+            <div className="grid grid-cols-2 gap-4.5">
+              <Button variant="secondary" onClick={() => setIsAdding(false)}>
+                취소
+              </Button>
+              <Button type="submit">추가하기</Button>
+            </div>
+          </form>
+        </Dialog>
       )}
     </>
   );

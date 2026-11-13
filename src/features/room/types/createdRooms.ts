@@ -9,4 +9,5 @@ export interface CreatedRoom {
   startsAt: string;
   status: 'live' | 'ended' | 'scheduled';
   showPrivateRoom?: boolean;
+  entryCode?: string;
 }
