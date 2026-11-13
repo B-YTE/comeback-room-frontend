@@ -1,11 +1,13 @@
+import { RoomCardActions } from '@/features/room/components/RoomCardActions';
 import type { ViewingRoom } from '@/features/room/types/viewingList';
 import { Playlist } from '@/shared/ui/Playlist';
 
 interface ViewingRoomCardProps {
   room: ViewingRoom;
+  onDelete: () => void;
 }
 
-export const ViewingRoomCard = ({ room }: ViewingRoomCardProps) => {
+export const ViewingRoomCard = ({ room, onDelete }: ViewingRoomCardProps) => {
   const date = new Date(room.viewedAt);
   const dateLabel = new Intl.DateTimeFormat('ko-KR', {
     timeZone: 'Asia/Seoul',
@@ -35,6 +37,14 @@ export const ViewingRoomCard = ({ room }: ViewingRoomCardProps) => {
         time={timeLabel}
         status={room.status}
         showPrivateRoom={room.isPrivate}
+        actions={
+          <RoomCardActions
+            title={room.title}
+            isPrivate={room.isPrivate}
+            entryCode={room.entryCode}
+            onDelete={onDelete}
+          />
+        }
       />
     </li>
   );
