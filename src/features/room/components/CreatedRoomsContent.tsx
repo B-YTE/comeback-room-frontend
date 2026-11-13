@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { RoomEntryDialog } from '@/features/room/components/RoomEntryDialog';
+import { useRoomEntry } from '@/features/room/hooks/useRoomEntry';
 import { ArtistFilter } from '@/features/room/components/ArtistFilter';
 import { DeleteRoomDialog } from '@/features/room/components/DeleteRoomDialog';
 import { RoomCardActions } from '@/features/room/components/RoomCardActions';
@@ -24,6 +26,7 @@ const TIME_FORMAT = new Intl.DateTimeFormat('ko-KR', {
 });
 
 export const CreatedRoomsContent = () => {
+  const entry = useRoomEntry();
   const { data: rooms = [], isPending, isError, refetch } = useCreatedRooms();
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [deleting, setDeleting] = useState<CreatedRoom | null>(null);
@@ -79,6 +82,7 @@ export const CreatedRoomsContent = () => {
               <li key={room.id}>
                 <Playlist
                   {...room}
+                  onOpen={() => entry.handleOpen(room)}
                   actions={
                     <RoomCardActions
                       title={room.title}
@@ -98,6 +102,14 @@ export const CreatedRoomsContent = () => {
             <Pagination page={currentPage} pageCount={pageCount} onPageChange={setPage} />
           </div>
         </>
+      )}
+      {entry.dialog && (
+        <RoomEntryDialog
+          state={entry.dialog}
+          onClose={entry.handleClose}
+          onSubscribe={entry.handleSubscribe}
+          onEnter={entry.handleEnter}
+        />
       )}
       {deleting && (
         <DeleteRoomDialog

@@ -17,6 +17,7 @@ interface PlaylistProps {
   status: ComponentProps<typeof StatusBadge>['status'];
   showPrivateRoom?: boolean;
   actions?: ReactNode;
+  onOpen?: () => void;
 }
 
 // Figma GUI > component > Playlist (568:5771)
@@ -33,15 +34,24 @@ export const Playlist = ({
   status,
   showPrivateRoom = false,
   actions,
+  onOpen,
 }: PlaylistProps) => {
   return (
     <article
-      tabIndex={0}
+      tabIndex={onOpen ? undefined : 0}
       className={cn(
-        'flex min-w-0 flex-col gap-8 rounded-extralarge border border-line-normal bg-background-surface p-6 lg:flex-row lg:items-center',
+        'relative flex min-w-0 flex-col gap-8 rounded-extralarge border border-line-normal bg-background-surface p-6 lg:flex-row lg:items-center',
         'hover:border-line-focus active:border-line-focus focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-line-focus',
       )}
     >
+      {onOpen && (
+        <button
+          type="button"
+          aria-label={`${title} 입장`}
+          onClick={onOpen}
+          className="absolute inset-0 z-10 rounded-extralarge focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-line-focus"
+        />
+      )}
       <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-large sm:w-94">
         <img src={thumbnail} alt="" className="size-full object-cover" />
         {showPrivateRoom && (
@@ -73,7 +83,11 @@ export const Playlist = ({
           <span>{time}</span>
         </time>
         <StatusBadge status={status} />
-        {actions && <div className="mt-auto flex flex-wrap items-center gap-3 pt-3">{actions}</div>}
+        {actions && (
+          <div className="relative z-20 mt-auto flex flex-wrap items-center gap-3 pt-3">
+            {actions}
+          </div>
+        )}
       </div>
     </article>
   );

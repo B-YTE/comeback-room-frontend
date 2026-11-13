@@ -3,6 +3,7 @@ import aespa from '@/assets/viewing-list/aespa.png';
 import ateez from '@/assets/viewing-list/ateez.png';
 import cortis from '@/assets/viewing-list/cortis.png';
 import tws from '@/assets/viewing-list/tws.png';
+import type { RoomEntry } from '@/features/room/types/roomEntry';
 import type { CreatedRoom } from '@/features/room/types/createdRooms';
 
 const EXAMPLES = [
@@ -13,9 +14,18 @@ const EXAMPLES = [
   { thumbnail: ateez, tags: ['에이티즈', '컴백무대'], status: 'ended' },
 ] satisfies Partial<CreatedRoom>[];
 
+const ENTRY_EXAMPLES = [
+  { kind: 'code-required' },
+  { kind: 'not-open', opensAt: '2026-11-23T15:20:00+09:00', subscribed: false },
+  { kind: 'full' },
+  { kind: 'available' },
+  { kind: 'not-open', opensAt: '2026-11-23T15:20:00+09:00', subscribed: true },
+] satisfies RoomEntry[];
+
 // 실제 사용자 소유 정보와 무관한 테스트 데이터. 페이지 이동 시연을 위한 25개 예시.
 export const createdRooms: CreatedRoom[] = Array.from({ length: 25 }, (_, index) => ({
   ...EXAMPLES[index % EXAMPLES.length],
+  entry: ENTRY_EXAMPLES[index % ENTRY_EXAMPLES.length],
   id: `created-preview-${index + 1}`,
   title: index < 5 ? '드디어 컴백한다는 그 날' : `함께 보는 컴백 예시 ${index + 1}`,
   subtitle: '[aespa] Whiplash Stage 컴백 같이 봤어요.',

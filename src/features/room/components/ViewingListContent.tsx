@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { RoomEntryDialog } from '@/features/room/components/RoomEntryDialog';
+import { useRoomEntry } from '@/features/room/hooks/useRoomEntry';
 import { ArtistFilter } from '@/features/room/components/ArtistFilter';
 import { DeleteRoomDialog } from '@/features/room/components/DeleteRoomDialog';
 import { ViewingRoomCard } from '@/features/room/components/ViewingRoomCard';
@@ -8,6 +10,7 @@ import type { ViewingRoom } from '@/features/room/types/viewingList';
 import { Button } from '@/shared/ui/Button';
 
 export const ViewingListContent = () => {
+  const entry = useRoomEntry();
   const [selected, setSelected] = useState('전체');
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [deleting, setDeleting] = useState<ViewingRoom | null>(null);
@@ -51,7 +54,12 @@ export const ViewingListContent = () => {
       {visibleRooms.length > 0 && (
         <ul aria-label="내 시청 목록" className="flex flex-col gap-8">
           {visibleRooms.map((room) => (
-            <ViewingRoomCard key={room.id} room={room} onDelete={() => setDeleting(room)} />
+            <ViewingRoomCard
+              key={room.id}
+              room={room}
+              onOpen={() => entry.handleOpen(room)}
+              onDelete={() => setDeleting(room)}
+            />
           ))}
         </ul>
       )}
@@ -81,6 +89,14 @@ export const ViewingListContent = () => {
         </p>
       )}
       <div ref={sentinel} aria-hidden="true" className="h-1" />
+      {entry.dialog && (
+        <RoomEntryDialog
+          state={entry.dialog}
+          onClose={entry.handleClose}
+          onSubscribe={entry.handleSubscribe}
+          onEnter={entry.handleEnter}
+        />
+      )}
       {deleting && (
         <DeleteRoomDialog
           title={deleting.title}
