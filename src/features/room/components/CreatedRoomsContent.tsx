@@ -11,6 +11,10 @@ import { Button } from '@/shared/ui/Button';
 import { Pagination } from '@/shared/ui/Pagination';
 import { Playlist } from '@/shared/ui/Playlist';
 
+// develop의 로컬 예시에는 권한 필드가 없다. API 연동 시 명시된 false도 차단한다.
+const canDeleteRoom = (room: CreatedRoom & { deletable?: boolean }) =>
+  room.status === 'scheduled' && (!('deletable' in room) || room.deletable === true);
+
 const PAGE_SIZE = 5;
 const DATE_FORMAT = new Intl.DateTimeFormat('ko-KR', {
   timeZone: 'Asia/Seoul',
@@ -27,7 +31,7 @@ const TIME_FORMAT = new Intl.DateTimeFormat('ko-KR', {
 
 export const CreatedRoomsContent = () => {
   const entry = useRoomEntry();
-  const { data: rooms = [], isPending, isError, refetch } = useCreatedRooms();
+  const { data: rooms = [], isPending, isFetching, isError, refetch } = useCreatedRooms();
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [deleting, setDeleting] = useState<CreatedRoom | null>(null);
   const remainingRooms = rooms.filter((room) => !deletedIds.includes(room.id));
@@ -58,7 +62,7 @@ export const CreatedRoomsContent = () => {
           setPage(1);
         }}
       />
-      {isPending ? (
+      {isPending || (isFetching && remainingRooms.length === 0) ? (
         <p role="status" className="py-16 typo-body-large">
           내가 만든 시청방을 불러오는 중입니다.
         </p>
@@ -71,8 +75,8 @@ export const CreatedRoomsContent = () => {
         </div>
       ) : filteredRooms.length === 0 ? (
         <p role="status" className="py-16 text-center typo-heading-h4 text-label-neutral">
-          {selected === '전체'
-            ? '아직 만든 시청방이 없습니다.'
+          {remainingRooms.length === 0
+            ? '아직 만든 시청방이 없어요.'
             : `${selected} 태그로 만든 시청방이 없습니다.`}
         </p>
       ) : (
@@ -84,12 +88,20 @@ export const CreatedRoomsContent = () => {
                   {...room}
                   onOpen={() => entry.handleOpen(room)}
                   actions={
-                    <RoomCardActions
-                      title={room.title}
-                      isPrivate={Boolean(room.showPrivateRoom)}
-                      entryCode={room.entryCode}
-                      onDelete={() => setDeleting(room)}
-                    />
+                    canDeleteRoom(room) || (room.showPrivateRoom && room.entryCode) ? (
+                      <RoomCardActions
+                        title={room.title}
+                        isPrivate={Boolean(room.showPrivateRoom)}
+                        entryCode={room.entryCode}
+                        onDelete={
+                          canDeleteRoom(room)
+                            ? () => {
+                                if (canDeleteRoom(room)) setDeleting(room);
+                              }
+                            : undefined
+                        }
+                      />
+                    ) : undefined
                   }
                   dateTime={room.startsAt}
                   date={DATE_FORMAT.format(new Date(room.startsAt)).replace(/\.$/, '')}
@@ -116,7 +128,9 @@ export const CreatedRoomsContent = () => {
           title={deleting.title}
           onClose={() => setDeleting(null)}
           onConfirm={() => {
-            setDeletedIds((ids) => [...ids, deleting.id]);
+            const currentRoom = rooms.find((room) => room.id === deleting.id);
+            if (!currentRoom || !canDeleteRoom(currentRoom)) return;
+            setDeletedIds((ids) => [...ids, currentRoom.id]);
             setDeleting(null);
           }}
         />

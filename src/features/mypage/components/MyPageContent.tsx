@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import arrowUrl from '@/assets/mypage/arrow.svg';
 import editUrl from '@/assets/mypage/edit.svg';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/TextField';
 import { TextFieldButton } from '@/shared/ui/TextFieldButton';
@@ -27,6 +29,7 @@ const SECTION_CLASS_NAME =
 
 // Figma GUI > 마이페이지 (333:603). 계정 API 확정 전에는 개인 데이터를 표시하지 않는다.
 export const MyPageContent = () => {
+  const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   return (
@@ -120,7 +123,7 @@ export const MyPageContent = () => {
               로그아웃
             </Button>
             <Button
-              disabled
+              onClick={() => setIsWithdrawalOpen(true)}
               variant="secondary"
               className="disabled:bg-background-elevated disabled:text-label-normal"
             >
@@ -139,6 +142,18 @@ export const MyPageContent = () => {
             : '로그인 및 사용자 정보 연동을 준비 중입니다.'}
         </p>
       </div>
+      {isWithdrawalOpen && (
+        <ConfirmDialog
+          title="정말로 탈퇴하시겠어요?"
+          description="탈퇴한 계정은 다시 복구할 수 없습니다."
+          confirmLabel="탈퇴하기"
+          onClose={() => setIsWithdrawalOpen(false)}
+        >
+          <p role="status" className="text-center typo-body-medium text-label-neutral">
+            회원 탈퇴 기능은 아직 연동되지 않았습니다.
+          </p>
+        </ConfirmDialog>
+      )}
     </div>
   );
 };
