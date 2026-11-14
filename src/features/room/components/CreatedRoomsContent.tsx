@@ -14,6 +14,8 @@ import { Button } from '@/shared/ui/Button';
 import { Pagination } from '@/shared/ui/Pagination';
 import { Playlist } from '@/shared/ui/Playlist';
 
+const canDeleteRoom = (room: CreatedRoom) => room.status === 'scheduled' && room.deletable === true;
+
 const DATE_FORMAT = new Intl.DateTimeFormat('ko-KR', {
   timeZone: 'Asia/Seoul',
   year: 'numeric',
@@ -33,7 +35,9 @@ export const CreatedRoomsContent = () => {
   const [selected, setSelected] = useState('전체');
   const [page, setPage] = useState(1);
   const client = useQueryClient();
-  const { data, isPending, isError, refetch } = useCreatedRooms(selected, page - 1);
+  const { data, isPending, isFetching, isError, refetch } = useCreatedRooms(selected, page - 1);
+  const allRooms = useCreatedRooms('전체', 0);
+  const isListEmpty = allRooms.isSuccess && !allRooms.isFetching && allRooms.data.totalPages === 0;
   const pageCount = data?.totalPages ?? 0;
   const currentPage = page;
   const visibleRooms = data?.rooms ?? [];
@@ -63,21 +67,28 @@ export const CreatedRoomsContent = () => {
           setPage(1);
         }}
       />
-      {isPending ? (
+      {isPending ||
+      (visibleRooms.length === 0 && (isFetching || allRooms.isPending || allRooms.isFetching)) ? (
         <p role="status" className="py-16 typo-body-large">
           내가 만든 시청방을 불러오는 중입니다.
         </p>
-      ) : isError ? (
+      ) : isError || (visibleRooms.length === 0 && allRooms.isError) ? (
         <div role="alert" className="flex flex-col items-start gap-6 py-16 typo-body-large">
           <p>내가 만든 시청방을 불러오지 못했습니다.</p>
-          <Button className="w-auto" onClick={() => void refetch()}>
+          <Button
+            className="w-auto"
+            onClick={() => {
+              void refetch();
+              void allRooms.refetch();
+            }}
+          >
             다시 시도
           </Button>
         </div>
       ) : visibleRooms.length === 0 ? (
         <p role="status" className="py-16 text-center typo-heading-h4 text-label-neutral">
-          {selected === '전체'
-            ? '아직 만든 시청방이 없습니다.'
+          {isListEmpty
+            ? '아직 만든 시청방이 없어요.'
             : `${selected} 태그로 만든 시청방이 없습니다.`}
         </p>
       ) : (
@@ -89,17 +100,23 @@ export const CreatedRoomsContent = () => {
                   {...room}
                   onOpen={() => entry.handleOpen(room)}
                   actions={
-                    <RoomCardActions
-                      title={room.title}
-                      isPrivate={Boolean(room.showPrivateRoom)}
-                      entryCode={room.entryCode}
-                      deletable={room.deletable && !deletion.isPending}
-                      onDelete={() => {
-                        if (deletion.isPending) return;
-                        deletion.reset();
-                        setDeleting(room);
-                      }}
-                    />
+                    canDeleteRoom(room) || (room.showPrivateRoom && room.entryCode) ? (
+                      <RoomCardActions
+                        title={room.title}
+                        isPrivate={Boolean(room.showPrivateRoom)}
+                        entryCode={room.entryCode}
+                        deletable={!deletion.isPending}
+                        onDelete={
+                          canDeleteRoom(room)
+                            ? () => {
+                                if (deletion.isPending || !canDeleteRoom(room)) return;
+                                deletion.reset();
+                                setDeleting(room);
+                              }
+                            : undefined
+                        }
+                      />
+                    ) : undefined
                   }
                   dateTime={room.startsAt}
                   date={DATE_FORMAT.format(new Date(room.startsAt)).replace(/\.$/, '')}
@@ -132,7 +149,10 @@ export const CreatedRoomsContent = () => {
           isPending={deletion.isPending}
           error={deletion.isError ? getErrorMessage(deletion.error) : undefined}
           onConfirm={() => {
-            if (!deletion.isPending && deleting.deletable) deletion.mutate(deleting.id);
+            const currentRoom = visibleRooms.find((room) => room.id === deleting.id);
+            if (!deletion.isPending && currentRoom && canDeleteRoom(currentRoom)) {
+              deletion.mutate(currentRoom.id);
+            }
           }}
         />
       )}

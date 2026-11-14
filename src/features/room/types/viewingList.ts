@@ -7,7 +7,7 @@ export interface ViewingRoom extends RoomEntryTarget {
   duration: string;
   tags: string[];
   viewedAt: string;
-  status: 'live' | 'ended' | 'scheduled';
+  status: 'live' | 'ended';
   isPrivate: boolean;
 }
 

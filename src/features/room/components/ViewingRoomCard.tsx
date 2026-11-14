@@ -4,11 +4,10 @@ import { Playlist } from '@/shared/ui/Playlist';
 
 interface ViewingRoomCardProps {
   room: ViewingRoom;
-  onDelete: () => void;
   onOpen: () => void;
 }
 
-export const ViewingRoomCard = ({ room, onDelete, onOpen }: ViewingRoomCardProps) => {
+export const ViewingRoomCard = ({ room, onOpen }: ViewingRoomCardProps) => {
   const date = new Date(room.viewedAt);
   const dateLabel = new Intl.DateTimeFormat('ko-KR', {
     timeZone: 'Asia/Seoul',
@@ -40,12 +39,13 @@ export const ViewingRoomCard = ({ room, onDelete, onOpen }: ViewingRoomCardProps
         status={room.status}
         showPrivateRoom={room.isPrivate}
         actions={
-          <RoomCardActions
-            title={room.title}
-            isPrivate={room.isPrivate}
-            entryCode={room.entryCode}
-            onDelete={onDelete}
-          />
+          room.isPrivate && room.entryCode ? (
+            <RoomCardActions
+              title={room.title}
+              isPrivate={room.isPrivate}
+              entryCode={room.entryCode}
+            />
+          ) : undefined
         }
       />
     </li>

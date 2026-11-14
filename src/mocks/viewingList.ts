@@ -17,7 +17,7 @@ export const viewingList: HistoryRoomDto[] = Array.from({ length: 23 }, (_, inde
     index % 5 < 2
       ? ['에스파', '컴백무대']
       : [['코르티스'], ['투어스'], ['에이티즈']][(index % 5) - 2],
-  status: index % 5 === 0 ? 'LIVE' : 'ENDED',
+  status: index % 5 === 0 || index % 5 === 2 ? 'LIVE' : 'ENDED',
   startAt: '2026-09-23T15:20:00',
   isPublic: index % 5 !== 2,
 }));

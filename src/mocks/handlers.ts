@@ -159,7 +159,7 @@ export const handlers = [
     const index = rooms.findIndex((room) => room.roomId === Number(params.id));
     const path = `/api/v1/watching-rooms/${params.id}`;
     if (index < 0) return failure(404, 'ROOM_NOT_FOUND', '존재하지 않는 시청방입니다.', path);
-    if (!rooms[index].deletable)
+    if (rooms[index].status !== 'SCHEDULED' || rooms[index].deletable !== true)
       return failure(409, 'ROOM_NOT_DELETABLE', '진행 전인 시청방만 삭제할 수 있습니다.', path);
     rooms.splice(index, 1);
     return success(null, 'WATCHING_ROOM_DELETED', '시청방이 성공적으로 삭제되었습니다.');
