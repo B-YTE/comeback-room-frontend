@@ -10,15 +10,15 @@ import type { ViewingRoom } from '@/features/room/types/viewingList';
 const EXAMPLES = [
   { thumbnail: aespaStage, tags: ['에스파', '컴백무대'], status: 'live' },
   { thumbnail: aespa, tags: ['에스파', '컴백무대'], status: 'ended' },
-  { thumbnail: cortis, tags: ['코르티스', '안무영상'], status: 'scheduled' },
+  { thumbnail: cortis, tags: ['코르티스', '안무영상'], status: 'live' },
   { thumbnail: tws, tags: ['투어스', '컴백무대'], status: 'ended' },
   { thumbnail: ateez, tags: ['에이티즈', '컴백무대'], status: 'ended' },
 ] satisfies Pick<ViewingRoom, 'thumbnail' | 'tags' | 'status'>[];
 
 const ENTRY_EXAMPLES = [
-  { kind: 'not-open', opensAt: '2026-11-23T15:20:00+09:00', subscribed: false },
-  { kind: 'not-open', opensAt: '2026-11-23T15:20:00+09:00', subscribed: true },
-  { kind: 'code-required' },
+  { kind: 'available' },
+  { kind: 'available' },
+  { kind: 'available' },
   { kind: 'full' },
   { kind: 'available' },
 ] satisfies RoomEntry[];
