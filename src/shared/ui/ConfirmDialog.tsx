@@ -9,6 +9,7 @@ interface ConfirmDialogProps {
   confirmLabel: string;
   onClose: () => void;
   onConfirm?: () => void;
+  isPending?: boolean;
   children?: ReactNode;
 }
 
@@ -19,6 +20,7 @@ export const ConfirmDialog = ({
   onClose,
   onConfirm,
   children,
+  isPending = false,
 }: ConfirmDialogProps) => (
   <Dialog title={title} description={description} onClose={onClose}>
     {children}
@@ -26,7 +28,7 @@ export const ConfirmDialog = ({
       <Button variant="secondary" data-dialog-autofocus onClick={onClose}>
         취소
       </Button>
-      <Button disabled={!onConfirm} onClick={onConfirm}>
+      <Button disabled={!onConfirm || isPending} onClick={onConfirm}>
         {confirmLabel}
       </Button>
     </div>

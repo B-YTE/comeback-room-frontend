@@ -1,17 +1,20 @@
-import axios from 'axios';
-
+import { pendingApi } from '@/shared/api/pendingApi';
+import { mapHistoryRoom } from '@/features/room/api/roomMapping';
+import type { HistoryRoomDto, RoomPageDto } from '@/features/room/types/roomApi';
 import type { ViewingListPage } from '@/features/room/types/viewingList';
 
-// 개발용 MSW 전용 경로/페이지 규격. 실제 API 명세가 확정되면 교체한다.
+// GET /api/v1/members/me/watching-histories — awaiting backend implementation.
 export const getViewingList = async (
   artist: string,
-  offset: number,
+  page: number,
   signal: AbortSignal,
 ): Promise<ViewingListPage> => {
-  if (!import.meta.env.DEV) return { items: [], nextOffset: null };
-  const { data } = await axios.get<ViewingListPage>('/__mocks__/viewing-list', {
-    params: { artist, offset },
+  const data = await pendingApi<RoomPageDto<HistoryRoomDto>>('viewing-list', {
+    params: { tags: artist === '전체' ? undefined : artist, page, size: 5 },
     signal,
   });
-  return data;
+  if (data.rooms.some((room) => room.status !== 'LIVE' && room.status !== 'ENDED')) {
+    throw new Error('시청 기록에 지원하지 않는 상태가 포함되어 있습니다.');
+  }
+  return { items: data.rooms.map(mapHistoryRoom), nextPage: data.hasNext ? data.page + 1 : null };
 };

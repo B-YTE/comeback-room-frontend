@@ -5,6 +5,7 @@ interface RoomCardActionsProps {
   isPrivate: boolean;
   entryCode?: string;
   onDelete?: () => void;
+  deletable?: boolean;
 }
 
 export const RoomCardActions = ({
@@ -12,6 +13,7 @@ export const RoomCardActions = ({
   isPrivate,
   entryCode,
   onDelete,
+  deletable = true,
 }: RoomCardActionsProps) => (
   <>
     {isPrivate && entryCode && (
@@ -19,7 +21,7 @@ export const RoomCardActions = ({
         입장코드: {entryCode}
       </span>
     )}
-    {onDelete && (
+    {onDelete && deletable && (
       <button
         type="button"
         aria-label={`${title} 삭제`}

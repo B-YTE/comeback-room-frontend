@@ -62,18 +62,19 @@ export const ViewingListContent = () => {
           ))}
         </ul>
       )}
-      {isFetching && (
+      {(isFetching || (visibleRooms.length === 0 && allHistory.isFetching)) && (
         <p role="status" className="py-16 typo-body-large text-label-neutral">
           시청 목록을 불러오는 중입니다.
         </p>
       )}
-      {isError && (
+      {(isError || (visibleRooms.length === 0 && allHistory.isError)) && (
         <div role="alert" className="flex flex-col items-start gap-6 py-16">
           <p>시청 목록을 불러오지 못했습니다.</p>
           <Button
-            onClick={() =>
-              void (isFetchNextPageError ? fetchNextPage({ cancelRefetch: false }) : refetch())
-            }
+            onClick={() => {
+              void (isFetchNextPageError ? fetchNextPage({ cancelRefetch: false }) : refetch());
+              if (allHistory.isError) void allHistory.refetch();
+            }}
             className="w-auto"
           >
             다시 시도
@@ -83,6 +84,8 @@ export const ViewingListContent = () => {
       {!isPending &&
         !isFetching &&
         !isError &&
+        allHistory.isSuccess &&
+        !allHistory.isFetching &&
         !hasInvalidStatus &&
         visibleRooms.length === 0 &&
         !hasNextPage && (
@@ -93,12 +96,16 @@ export const ViewingListContent = () => {
           </p>
         )}
       <div ref={sentinel} aria-hidden="true" className="h-1" />
+      {entry.isPending && !entry.dialog && <p role="status">시청방 정보를 확인하는 중입니다.</p>}
+      {entry.error && !entry.dialog && <p role="alert">{entry.error}</p>}
       {entry.dialog && (
         <RoomEntryDialog
           state={entry.dialog}
           onClose={entry.handleClose}
           onSubscribe={entry.handleSubscribe}
           onEnter={entry.handleEnter}
+          isPending={entry.isPending}
+          error={entry.error}
         />
       )}
       {hasInvalidStatus && (
@@ -107,8 +114,9 @@ export const ViewingListContent = () => {
         </p>
       )}
       <p className="typo-body-medium text-label-assistive">
-        {import.meta.env.DEV ? '개발용 예시 목록입니다. ' : ''}실제 시청 목록과 시청방 이동 기능은
-        서버 연동 후 제공됩니다.
+        {import.meta.env.DEV
+          ? '개발용 예시 목록입니다.'
+          : '시청 기록 조회는 서버 구현을 기다리고 있습니다.'}
       </p>
     </div>
   );

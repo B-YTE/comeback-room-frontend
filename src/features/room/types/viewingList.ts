@@ -11,8 +11,8 @@ export interface ViewingRoom extends RoomEntryTarget {
   isPrivate: boolean;
 }
 
-// 개발용 MSW 전용 페이지 모델. 백엔드 API 계약이 아니다.
+// 화면용 무한 스크롤 모델. nextPage은 API의 다음 0-based page 번호다.
 export interface ViewingListPage {
   items: ViewingRoom[];
-  nextOffset: number | null;
+  nextPage: number | null;
 }
