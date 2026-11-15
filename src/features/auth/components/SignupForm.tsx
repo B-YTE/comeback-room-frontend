@@ -4,35 +4,65 @@ import { useNavigate } from 'react-router-dom';
 import {
   checkNicknameAvailability,
   sendEmailCode,
+  signUp,
   verifyEmailCode,
 } from '@/features/auth/api/auth';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import { type Feedback, FormMessage } from '@/features/auth/components/FormMessage';
 import { getErrorMessage } from '@/shared/api/getErrorMessage';
 import { Button } from '@/shared/ui/Button';
+import { IconCheck, IconChevronDown } from '@/shared/ui/icons';
 import { TextField } from '@/shared/ui/TextField';
 import { TextFieldButton } from '@/shared/ui/TextFieldButton';
 
 // 8자 이상, 영문과 숫자를 모두 포함 (ResetPasswordForm과 같은 규칙)
 const PASSWORD_PATTERN = '(?=.*[A-Za-z])(?=.*\\d).{8,}';
 
+const AGREEMENTS = [
+  { name: 'termsAgreed', label: '[필수] 이용약관에 동의합니다.' },
+  { name: 'privacyAgreed', label: '[필수] 개인정보 처리방침에 동의합니다.' },
+];
+
 // Figma GUI > 회원가입 (node 333:269)
 export const SignupForm = () => {
   const navigate = useNavigate();
   const [isMismatch, setIsMismatch] = useState(false);
+  const [verificationToken, setVerificationToken] = useState<string | null>(null);
   const [emailFeedback, setEmailFeedback] = useState<Feedback | null>(null);
   const [codeFeedback, setCodeFeedback] = useState<Feedback | null>(null);
   const [nicknameFeedback, setNicknameFeedback] = useState<Feedback | null>(null);
+  const [submitFeedback, setSubmitFeedback] = useState<Feedback | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
-  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     if (formData.get('password') !== formData.get('passwordConfirm')) {
       setIsMismatch(true);
       return;
     }
-    // shortcut: 회원가입 API는 loginId·약관 동의가 필수인데 화면에 해당 항목이 없어 미연동, 백엔드·디자인과 항목을 맞춘 뒤 연결
-    navigate('/login', { replace: true });
+    if (!verificationToken) {
+      setCodeFeedback({ text: '이메일 인증을 먼저 완료해주세요.', isError: true });
+      return;
+    }
+    setIsPending(true);
+    try {
+      await signUp({
+        loginId: String(formData.get('loginId')),
+        email: String(formData.get('email')),
+        emailVerificationToken: verificationToken,
+        nickname: String(formData.get('nickname')),
+        password: String(formData.get('password')),
+        passwordConfirm: String(formData.get('passwordConfirm')),
+        // 두 체크박스 모두 required라 제출됐다면 동의한 상태
+        termsAgreed: true,
+        privacyAgreed: true,
+      });
+      navigate('/login', { replace: true });
+    } catch (error) {
+      setSubmitFeedback({ text: getErrorMessage(error), isError: true });
+      setIsPending(false);
+    }
   };
 
   // 버튼이 속한 폼에서 입력값을 꺼내고, 비어 있거나 형식이 틀리면 브라우저 검증 문구를 띄운다
@@ -52,17 +82,17 @@ export const SignupForm = () => {
     }
   };
 
-  // shortcut: 받은 verificationToken은 회원가입 API 연동 때 상태로 보관해 제출에 사용
   const handleVerifyCode = async (event: MouseEvent<HTMLButtonElement>) => {
     const emailInput = getValidInput(event, 'email');
     const codeInput = emailInput && getValidInput(event, 'code');
     if (!emailInput || !codeInput) return;
     try {
-      await verifyEmailCode({
+      const { verificationToken } = await verifyEmailCode({
         email: emailInput.value,
         verificationCode: codeInput.value,
         purpose: 'SIGN_UP',
       });
+      setVerificationToken(verificationToken);
       setCodeFeedback({ text: '이메일 인증이 완료되었습니다.', isError: false });
     } catch (error) {
       setCodeFeedback({ text: getErrorMessage(error), isError: true });
@@ -95,6 +125,23 @@ export const SignupForm = () => {
 
       <form onSubmit={handleSubmit} className="flex w-full flex-col gap-20">
         <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-4">
+            <label htmlFor="signup-login-id" className="typo-heading-h4 text-label-normal">
+              아이디
+            </label>
+            <div className="flex gap-3.75">
+              <TextField
+                id="signup-login-id"
+                name="loginId"
+                autoComplete="username"
+                placeholder="아이디를 입력해주세요"
+                required
+              />
+              {/* shortcut: 아이디 중복 확인 API가 명세에 없어 비활성, 중복은 제출 시 409로 알림. API가 생기면 연결 */}
+              <TextFieldButton disabled>중복 확인</TextFieldButton>
+            </div>
+          </div>
+
           <div className="flex flex-col gap-4">
             <label htmlFor="signup-email" className="typo-heading-h4 text-label-normal">
               이메일
@@ -189,9 +236,35 @@ export const SignupForm = () => {
               </p>
             )}
           </div>
+
+          <div className="flex flex-col gap-3">
+            {AGREEMENTS.map(({ name, label }) => (
+              <div key={name} className="flex items-center justify-between">
+                <label className="flex items-center gap-4 typo-title-20-regular text-label-neutral">
+                  <span className="relative size-6 shrink-0">
+                    <input
+                      type="checkbox"
+                      name={name}
+                      required
+                      className="peer block size-6 appearance-none rounded-small border border-label-neutral checked:border-primary-normal checked:bg-primary-normal"
+                    />
+                    <IconCheck className="pointer-events-none absolute inset-0 hidden size-6 text-label-strong peer-checked:block" />
+                  </span>
+                  {label}
+                </label>
+                {/* shortcut: 약관 본문이 아직 없어 펼치기 동작 없이 아이콘만 표시, 본문이 나오면 펼침 연결 */}
+                <IconChevronDown className="text-label-neutral" />
+              </div>
+            ))}
+          </div>
         </div>
 
-        <Button type="submit">회원가입</Button>
+        <div className="flex flex-col gap-4">
+          <Button type="submit" disabled={isPending}>
+            회원가입
+          </Button>
+          <FormMessage feedback={submitFeedback} />
+        </div>
       </form>
     </AuthCard>
   );
