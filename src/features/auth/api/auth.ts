@@ -8,6 +8,21 @@ export const login = async (body: { loginId: string; password: string }) => {
   return data.data;
 };
 
+export const signUp = (body: {
+  loginId: string;
+  email: string;
+  emailVerificationToken: string;
+  nickname: string;
+  password: string;
+  passwordConfirm: string;
+  termsAgreed: boolean;
+  privacyAgreed: boolean;
+}) =>
+  api.post<ApiResponse<{ memberId: number; email: string; nickname: string }>>(
+    '/api/v1/auth/sign-up',
+    body,
+  );
+
 export const sendEmailCode = (body: { email: string; purpose: EmailPurpose }) =>
   api.post<ApiResponse<null>>('/api/v1/auth/email/send', body);
 
