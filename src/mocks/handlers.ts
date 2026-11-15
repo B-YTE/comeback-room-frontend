@@ -243,5 +243,64 @@ export const handlers = [
       '시청방에 입장했습니다.',
     );
   }),
+  // 인증: 개발 서버에 아직 없는 API만 목업 (2026-11-15 기준 login·refresh·logout은 실제 서버로 통과)
+  // shortcut: 백엔드가 배포한 API는 여기서 지워 실제 서버로 보낼 것
+  http.post('*/api/v1/auth/email/send', async () => {
+    await delay(250);
+    return success(null, 'EMAIL_CODE_SENT', '인증코드가 이메일로 발송되었습니다.');
+  }),
+  // 목업 인증번호는 123456
+  http.post('*/api/v1/auth/email/verify', async ({ request }) => {
+    const body = (await request.json()) as { verificationCode?: string };
+    await delay(250);
+    if (body.verificationCode !== '123456') {
+      return failure(
+        400,
+        'INVALID_VERIFICATION_CODE',
+        '인증코드가 일치하지 않거나 만료되었습니다.',
+        '/api/v1/auth/email/verify',
+      );
+    }
+    return success(
+      { verificationToken: 'mock-verification-token' },
+      'EMAIL_VERIFIED',
+      '이메일 인증이 완료되었습니다.',
+    );
+  }),
+  // 프로필 목업의 현재 닉네임만 사용 중으로 본다
+  http.get('*/api/v1/auth/nickname/availability', async ({ request }) => {
+    await delay(250);
+    return success(
+      { available: new URL(request.url).searchParams.get('nickname') !== nickname },
+      'NICKNAME_AVAILABILITY_FOUND',
+      '닉네임 사용 가능 여부를 조회했습니다.',
+    );
+  }),
+  http.post('*/api/v1/auth/sign-up', async ({ request }) => {
+    const body = (await request.json()) as { email: string; nickname: string };
+    await delay(250);
+    return success(
+      { memberId: 1, email: body.email, nickname: body.nickname },
+      'MEMBER_CREATED',
+      '회원가입이 완료되었습니다.',
+      201,
+    );
+  }),
+  http.post('*/api/v1/auth/find-id', async () => {
+    await delay(250);
+    return success({ loginId: 'zin***' }, 'LOGIN_ID_FOUND', '아이디 조회에 성공했습니다.');
+  }),
+  http.post('*/api/v1/auth/password/reset-request', async () => {
+    await delay(250);
+    return success(
+      null,
+      'PASSWORD_RESET_REQUESTED',
+      '비밀번호 재설정을 위한 인증코드가 발송되었습니다.',
+    );
+  }),
+  http.post('*/api/v1/auth/password/reset', async () => {
+    await delay(250);
+    return success(null, 'PASSWORD_RESET_SUCCESS', '비밀번호가 재설정되었습니다.');
+  }),
   http.get('/api/health', () => HttpResponse.json({ success: true, message: 'MSW is working' })),
 ];
