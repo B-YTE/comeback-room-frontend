@@ -8,6 +8,16 @@ export const login = async (body: { loginId: string; password: string }) => {
   return data.data;
 };
 
+// Refresh Token 쿠키만으로 새 Access Token을 받는다. 서버가 응답하지 않아도 앱이 멈추지 않게 timeout을 둔다.
+export const refreshAccessToken = async () => {
+  const { data } = await api.post<ApiResponse<{ accessToken: string }>>(
+    '/api/v1/auth/refresh',
+    undefined,
+    { timeout: 5000 },
+  );
+  return data.data.accessToken;
+};
+
 export const signUp = (body: {
   loginId: string;
   email: string;
