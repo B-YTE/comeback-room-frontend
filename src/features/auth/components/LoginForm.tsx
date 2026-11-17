@@ -16,7 +16,7 @@ const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1/oauth2/aut
 // Figma GUI > 1-1-1 로그인 (node 333:239)
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -29,9 +29,7 @@ export const LoginForm = () => {
         loginId: String(formData.get('loginId')),
         password: String(formData.get('password')),
       });
-      // axios 인터셉터가 localStorage의 accessToken을 읽는다
-      localStorage.setItem('accessToken', accessToken);
-      setIsLoggedIn(true);
+      setAccessToken(accessToken);
       navigate('/', { replace: true });
     } catch (error) {
       setFeedback({ text: getErrorMessage(error), isError: true });
