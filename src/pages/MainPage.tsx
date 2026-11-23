@@ -102,26 +102,15 @@ function PopularVideoCard({ video }: { video: Video }) {
 }
 
 function ViewingRoomCard({ room }: { room: ViewingRoom }) {
-  const isLive = room.status === 'live';
-
   return (
     <article className="min-w-0 overflow-hidden rounded-medium border border-line-subtle bg-background-surface">
-      <div className="relative aspect-video overflow-hidden bg-background-subtle">
+      <div className="aspect-[585/300] overflow-hidden bg-background-subtle">
         <img src={room.thumbnail} alt={room.title} className="h-full w-full object-cover" />
+      </div>
 
-        <span
-          className={`absolute top-3 left-3 rounded-small px-3 py-2 typo-label-medium ${
-            isLive
-              ? 'bg-accent-live-solid text-accent-live-on-solid'
-              : 'bg-accent-engagement-solid text-static-white'
-          }`}
-        >
-          {isLive ? '● LIVE' : '오늘 ' + room.startTime}
-        </span>
-
-        <span className="absolute top-3 right-3 rounded-full bg-background-scrim px-3 py-2 typo-caption text-static-white">
-          {room.viewers}명 시청 중
-        </span>
+      {/* 영상 진행 바 */}
+      <div className="h-[3px] w-full bg-[#555560]">
+        <div className="h-full w-[60%] bg-[#FF2F78]" />
       </div>
 
       <div className="p-4">
@@ -202,7 +191,7 @@ export const MainPage = () => {
 
       {/* 시청방 목록 */}
       <section>
-        <h2 className="mb-6 typo-heading-bold-28 text-label-strong">
+        <h2 className="mb-6 typo-heading-semibold-36 text-label-strong">
           시청방 목록 <span className="ml-2 text-primary-normal">24</span>
         </h2>
 
@@ -213,7 +202,7 @@ export const MainPage = () => {
                 key={item.value}
                 type="button"
                 onClick={() => setFilter(item.value)}
-                className={`rounded-full px-5 py-3 typo-label-medium transition-colors ${
+                className={`rounded-full px-6 py-3.5 text-[16px] font-medium transition-colors ${
                   filter === item.value
                     ? 'bg-static-white text-static-black'
                     : 'bg-background-subtle text-label-neutral hover:bg-background-interactive'
@@ -232,7 +221,7 @@ export const MainPage = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredRooms.map((room) => (
             <ViewingRoomCard key={room.id} room={room} />
           ))}
