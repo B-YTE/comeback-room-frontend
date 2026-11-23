@@ -5,6 +5,8 @@ import {
   type RoomFilterOptions,
 } from '@/features/room/components/RoomFilterDialog';
 
+import { PrivateRoomEntryDialog } from '@/features/room/components/PrivateRoomEntryDialog';
+
 import popular1 from '@/assets/home/popular-1.png';
 import popular2 from '@/assets/home/popular-2.png';
 import popular3 from '@/assets/home/popular-3.png';
@@ -146,6 +148,7 @@ export const MainPage = () => {
   const [filter, setFilter] = useState<RoomFilter>('all');
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isPrivateRoomOpen, setIsPrivateRoomOpen] = useState(false);
 
   const [roomFilters, setRoomFilters] = useState<RoomFilterOptions>({
     sort: 'latest',
@@ -258,6 +261,20 @@ export const MainPage = () => {
           onApply={(newFilters) => {
             setRoomFilters(newFilters);
             setIsFilterOpen(false);
+
+            if (newFilters.visibility === 'private') {
+              setIsPrivateRoomOpen(true);
+            }
+          }}
+        />
+      )}
+
+      {/* 비공개방 입장 팝업 */}
+      {isPrivateRoomOpen && (
+        <PrivateRoomEntryDialog
+          onClose={() => setIsPrivateRoomOpen(false)}
+          onEnter={(code) => {
+            console.log('입력한 코드:', code);
           }}
         />
       )}
