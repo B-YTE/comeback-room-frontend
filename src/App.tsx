@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { AppLayout } from '@/app/AppLayout';
 import { GuestOnlyRoute } from '@/app/GuestOnlyRoute';
 import { CreatedRoomsPage } from '@/pages/CreatedRoomsPage';
+import { CreateRoomPage } from '@/pages/CreateRoomPage';
 import { FindIdPage } from '@/pages/FindIdPage';
 import { FindIdResultPage } from '@/pages/FindIdResultPage';
 import { FindPasswordPage } from '@/pages/FindPasswordPage';
@@ -19,6 +20,7 @@ const App = () => {
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
         <Route path="mypage/created-rooms" element={<CreatedRoomsPage />} />
+        <Route path="rooms/new" element={<CreateRoomPage />} />
         <Route path="mypage" element={<MyPage />} />
         <Route path="mypage/viewing-list" element={<ViewingListPage />} />
         <Route element={<GuestOnlyRoute />}>
