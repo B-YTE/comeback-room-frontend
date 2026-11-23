@@ -1,5 +1,10 @@
 import { useState } from 'react';
 
+import {
+  RoomFilterDialog,
+  type RoomFilterOptions,
+} from '@/features/room/components/RoomFilterDialog';
+
 import popular1 from '@/assets/home/popular-1.png';
 import popular2 from '@/assets/home/popular-2.png';
 import popular3 from '@/assets/home/popular-3.png';
@@ -13,6 +18,8 @@ import room6 from '@/assets/home/room-6.png';
 import room7 from '@/assets/home/room-7.png';
 import room8 from '@/assets/home/room-8.png';
 import room9 from '@/assets/home/room-9.png';
+
+import filterIcon from '@/assets/home/filter.svg';
 
 type RoomStatus = 'live' | 'scheduled';
 type RoomFilter = 'all' | RoomStatus;
@@ -138,6 +145,13 @@ function ViewingRoomCard({ room }: { room: ViewingRoom }) {
 export const MainPage = () => {
   const [filter, setFilter] = useState<RoomFilter>('all');
 
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const [roomFilters, setRoomFilters] = useState<RoomFilterOptions>({
+    sort: 'latest',
+    visibility: 'all',
+  });
+
   const filteredRooms = viewingRooms.filter((room) => {
     if (filter === 'all') return true;
     return room.status === filter;
@@ -215,9 +229,11 @@ export const MainPage = () => {
 
           <button
             type="button"
-            className="rounded-full bg-background-subtle px-5 py-3 typo-label-medium text-label-neutral"
+            onClick={() => setIsFilterOpen(true)}
+            className="flex items-center justify-center gap-2 rounded-full bg-background-subtle px-5 py-3 typo-label-medium text-label-neutral"
           >
-            ☷ 필터
+            <img src={filterIcon} alt="" aria-hidden="true" className="h-6 w-6" />
+            필터
           </button>
         </div>
 
@@ -233,6 +249,18 @@ export const MainPage = () => {
           </p>
         )}
       </section>
+
+      {/* 시청방 필터 팝업 */}
+      {isFilterOpen && (
+        <RoomFilterDialog
+          initialFilters={roomFilters}
+          onClose={() => setIsFilterOpen(false)}
+          onApply={(newFilters) => {
+            setRoomFilters(newFilters);
+            setIsFilterOpen(false);
+          }}
+        />
+      )}
     </main>
   );
 };
