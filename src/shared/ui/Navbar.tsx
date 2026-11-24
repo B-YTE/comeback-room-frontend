@@ -2,7 +2,7 @@ import { type SubmitEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 import logoUrl from '@/assets/logo.svg';
-import { IconNotification, IconPlus, IconSearch } from '@/shared/ui/icons';
+import { IconNotification, IconNotificationAlarm, IconPlus, IconSearch } from '@/shared/ui/icons';
 
 interface NavbarUser {
   nickname: string;
@@ -13,10 +13,18 @@ interface NavbarProps {
   /** null이면 로그인 전 상단바(로고, 검색창, 로그인 버튼) */
   user: NavbarUser | null;
   onSearch?: (keyword: string) => void;
+  /** 알림 버튼이 열 popover 요소의 id */
+  notificationPanelId?: string;
+  hasUnreadNotification?: boolean;
 }
 
 // Figma GUI > component > top bar (node 491:332)
-export const Navbar = ({ user, onSearch }: NavbarProps) => {
+export const Navbar = ({
+  user,
+  onSearch,
+  notificationPanelId,
+  hasUnreadNotification = false,
+}: NavbarProps) => {
   const handleSearchSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const keyword = new FormData(event.currentTarget).get('keyword');
@@ -64,8 +72,17 @@ export const Navbar = ({ user, onSearch }: NavbarProps) => {
               </Link>
 
               <div className="flex min-w-0 items-center gap-12">
-                <button type="button" aria-label="알림" className="shrink-0 text-label-strong">
-                  <IconNotification className="size-14" />
+                <button
+                  type="button"
+                  aria-label={hasUnreadNotification ? '알림, 읽지 않은 알림 있음' : '알림'}
+                  popoverTarget={notificationPanelId}
+                  className="shrink-0 rounded-small text-label-strong focus-visible:outline-2 focus-visible:outline-line-focus"
+                >
+                  {hasUnreadNotification ? (
+                    <IconNotificationAlarm className="size-14" />
+                  ) : (
+                    <IconNotification className="size-14" />
+                  )}
                 </button>
 
                 <Link
