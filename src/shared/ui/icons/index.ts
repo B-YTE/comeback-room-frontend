@@ -6,6 +6,7 @@
 export { IconCalendarFilled } from '@/shared/ui/icons/IconCalendarFilled';
 export { IconCalendarStroke } from '@/shared/ui/icons/IconCalendarStroke';
 export { IconCheck } from '@/shared/ui/icons/IconCheck';
+export { IconCheckStroke } from '@/shared/ui/icons/IconCheckStroke';
 export { IconChevronDown } from '@/shared/ui/icons/IconChevronDown';
 export { IconClock } from '@/shared/ui/icons/IconClock';
 export { IconClose } from '@/shared/ui/icons/IconClose';
