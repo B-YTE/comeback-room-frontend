@@ -4,6 +4,7 @@ import { AppLayout } from '@/app/AppLayout';
 import { GuestOnlyRoute } from '@/app/GuestOnlyRoute';
 import { CreatedRoomsPage } from '@/pages/CreatedRoomsPage';
 import { CreateRoomPage } from '@/pages/CreateRoomPage';
+import { RoomPage } from '@/pages/RoomPage';
 import { FindIdPage } from '@/pages/FindIdPage';
 import { FindIdResultPage } from '@/pages/FindIdResultPage';
 import { FindPasswordPage } from '@/pages/FindPasswordPage';
@@ -21,6 +22,7 @@ const App = () => {
         <Route index element={<HomePage />} />
         <Route path="mypage/created-rooms" element={<CreatedRoomsPage />} />
         <Route path="rooms/new" element={<CreateRoomPage />} />
+        <Route path="/rooms/:roomId" element={<RoomPage />} />
         <Route path="mypage" element={<MyPage />} />
         <Route path="mypage/viewing-list" element={<ViewingListPage />} />
         <Route element={<GuestOnlyRoute />}>

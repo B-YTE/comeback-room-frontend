@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import {
   RoomFilterDialog,
@@ -82,7 +82,7 @@ const viewingRooms: ViewingRoom[] = Array.from({ length: 9 }, (_, index) => ({
 
 function PopularVideoCard({ video }: { video: Video }) {
   return (
-    <article className="min-w-0">
+    <Link to={`/rooms/${video.id}`} className="block min-w-0 cursor-pointer">
       <div className="aspect-video overflow-hidden rounded-medium bg-background-subtle">
         <img
           src={video.thumbnail}
@@ -108,13 +108,16 @@ function PopularVideoCard({ video }: { video: Video }) {
           </p>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 
 function ViewingRoomCard({ room }: { room: ViewingRoom }) {
   return (
-    <article className="min-w-0 overflow-hidden rounded-medium border border-line-subtle bg-background-surface">
+    <Link
+      to={`/rooms/${room.id}`}
+      className="block min-w-0 cursor-pointer overflow-hidden rounded-medium border border-line-subtle bg-background-surface"
+    >
       <div className="aspect-[585/300] overflow-hidden bg-background-subtle">
         <img src={room.thumbnail} alt={room.title} className="h-full w-full object-cover" />
       </div>
@@ -142,7 +145,7 @@ function ViewingRoomCard({ room }: { room: ViewingRoom }) {
           </span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 
