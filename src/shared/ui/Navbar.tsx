@@ -1,8 +1,9 @@
-import { type SubmitEvent } from 'react';
+import { useState, type SubmitEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 import logoUrl from '@/assets/logo.svg';
 import { IconNotification, IconNotificationAlarm, IconPlus, IconSearch } from '@/shared/ui/icons';
+import { RoomSearchDropdown } from '@/features/room/components/RoomSearchDropdown';
 
 interface NavbarUser {
   nickname: string;
@@ -18,6 +19,19 @@ interface NavbarProps {
   hasUnreadNotification?: boolean;
 }
 
+const SEARCH_SUGGESTIONS = [
+  '에스파',
+  '에스파 컴백',
+  '에스파 노래',
+  '에스파 카리나',
+  '에스파 윈터',
+  '에스파 지젤',
+  '에스파 닝닝',
+  '에스파 안무영상',
+];
+
+const SEARCH_HISTORY_KEY = 'comeback-room-search-history';
+
 // Figma GUI > component > top bar (node 491:332)
 export const Navbar = ({
   user,
@@ -25,29 +39,90 @@ export const Navbar = ({
   notificationPanelId,
   hasUnreadNotification = false,
 }: NavbarProps) => {
+  const [keyword, setKeyword] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) ?? '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const isRecent = keyword.trim() === '';
+
+  const displayedKeywords = isRecent
+    ? recentSearches
+    : SEARCH_SUGGESTIONS.filter((item) =>
+        item.toLowerCase().includes(keyword.trim().toLowerCase()),
+      );
+
+  const executeSearch = (value: string) => {
+    const trimmedKeyword = value.trim();
+
+    if (!trimmedKeyword) return;
+
+    const updatedSearches = [
+      trimmedKeyword,
+      ...recentSearches.filter((item) => item !== trimmedKeyword),
+    ].slice(0, 8);
+
+    setRecentSearches(updatedSearches);
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updatedSearches));
+
+    setKeyword(trimmedKeyword);
+    setIsSearchOpen(false);
+
+    onSearch?.(trimmedKeyword);
+  };
+
   const handleSearchSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const keyword = new FormData(event.currentTarget).get('keyword');
-    if (typeof keyword === 'string' && keyword.trim()) {
-      onSearch?.(keyword.trim());
-    }
+    executeSearch(keyword);
   };
 
   const searchForm = (
-    <form
-      role="search"
-      onSubmit={handleSearchSubmit}
-      className="ml-35.75 flex w-180 shrink-0 items-center gap-4 rounded-full border border-line-normal bg-background-elevated px-5 py-4 focus-within:border-line-focus"
+    <div
+      className="relative ml-35.75 w-180 shrink-0"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsSearchOpen(false);
+        }
+      }}
     >
-      <IconSearch className="size-8.5 shrink-0 text-label-normal" />
-      <input
-        type="search"
-        name="keyword"
-        aria-label="검색어"
-        placeholder="아티스트, 영상, 방 제목을 검색해보세요"
-        className="w-full bg-transparent typo-heading-regular text-label-normal outline-none placeholder:text-label-neutral"
-      />
-    </form>
+      <form
+        role="search"
+        onSubmit={handleSearchSubmit}
+        className="flex w-full items-center gap-4 rounded-full border border-line-normal bg-background-elevated px-5 py-4 focus-within:border-line-focus"
+      >
+        <IconSearch className="size-8.5 shrink-0 text-label-normal" />
+
+        <input
+          type="search"
+          name="keyword"
+          aria-label="검색어"
+          value={keyword}
+          autoComplete="off"
+          onFocus={() => setIsSearchOpen(true)}
+          onClick={() => setIsSearchOpen(true)}
+          onChange={(event) => {
+            setKeyword(event.target.value);
+            setIsSearchOpen(true);
+          }}
+          placeholder="아티스트, 영상, 방 제목을 검색해보세요"
+          className="w-full bg-transparent typo-heading-regular text-label-normal outline-none placeholder:text-label-neutral"
+        />
+      </form>
+
+      {isSearchOpen && (
+        <RoomSearchDropdown
+          keywords={displayedKeywords}
+          isRecent={isRecent}
+          onSelect={executeSearch}
+        />
+      )}
+    </div>
   );
 
   return (
