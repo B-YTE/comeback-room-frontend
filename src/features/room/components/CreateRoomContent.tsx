@@ -1,8 +1,16 @@
 import { useState } from 'react';
 
 import previewImage from '@/assets/home/popular-1.png';
+import globeIcon from '@/assets/home/globe.svg';
+import lockIcon from '@/assets/home/lock.svg';
+
+import calendarIcon from '@/assets/home/calendar.svg';
+import clockIcon from '@/assets/home/clock.svg';
+import peopleIcon from '@/assets/home/people.svg';
+
 import { TextField } from '@/shared/ui/TextField';
 import { Button } from '@/shared/ui/Button';
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 
 type RoomVisibility = 'public' | 'private';
 
@@ -16,6 +24,7 @@ export const CreateRoomContent = () => {
   const [capacity, setCapacity] = useState('');
   const [startDate, setStartDate] = useState('');
   const [startTime, setStartTime] = useState('21:00');
+  const [isCancelOpen, setIsCancelOpen] = useState(false);
 
   const isPrivate = visibility === 'private';
 
@@ -42,9 +51,6 @@ export const CreateRoomContent = () => {
     // TODO: 백엔드 시청방 생성 API 연결
     alert('UI 구현 단계입니다. 실제 시청방은 아직 생성되지 않습니다.');
   };
-
-  const inputStyle =
-    'h-12 w-full rounded-md border border-line-normal bg-transparent px-4 text-sm text-label-strong outline-none focus:border-primary-normal';
 
   return (
     <main className="w-full pt-12 pb-24 text-label-strong">
@@ -131,19 +137,19 @@ export const CreateRoomContent = () => {
             <div>
               <p className="mb-3 font-medium">공개 범위</p>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-5">
                 <button
                   type="button"
                   aria-pressed={!isPrivate}
                   onClick={() => setVisibility('public')}
-                  className={`flex min-h-[78px] items-center gap-3 rounded-[8px] border p-4 text-left ${
+                  className={`flex min-h-[78px] items-center gap-4 rounded-[8px] border px-6 py-4 text-left ${
                     !isPrivate ? 'border-[#FF3278]' : 'border-line-normal'
                   }`}
                 >
-                  <span className="text-xl text-[#FF3278]">◎</span>
+                  <img src={globeIcon} alt="" className="size-8 shrink-0" />
                   <span>
-                    <strong className="block text-sm">공개방</strong>
-                    <span className="text-xs text-label-assistive">
+                    <strong className="block text-base font-medium">공개방</strong>
+                    <span className="text-sm text-label-assistive">
                       목록에 노출되어 누구나 입장 가능
                     </span>
                   </span>
@@ -153,14 +159,14 @@ export const CreateRoomContent = () => {
                   type="button"
                   aria-pressed={isPrivate}
                   onClick={() => setVisibility('private')}
-                  className={`flex min-h-[78px] items-center gap-3 rounded-[8px] border p-4 text-left ${
+                  className={`flex min-h-[78px] items-center gap-4 rounded-[8px] border px-6 py-4 text-left ${
                     isPrivate ? 'border-[#FF3278]' : 'border-line-normal'
                   }`}
                 >
-                  <span className="text-xl">♙</span>
+                  <img src={lockIcon} alt="" className="size-8 shrink-0" />
                   <span>
-                    <strong className="block text-sm">비공개방</strong>
-                    <span className="text-xs text-label-assistive">
+                    <strong className="block text-base font-medium">비공개방</strong>
+                    <span className="text-sm text-label-assistive">
                       목록에 노출되지 않아 누구나 입장 불가능
                     </span>
                   </span>
@@ -210,23 +216,42 @@ export const CreateRoomContent = () => {
               <div>
                 <div>
                   <label className="mb-3 block font-medium">시작 시간</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="date"
-                      aria-label="시작 날짜"
-                      className={`${inputStyle} min-w-0 flex-1 px-2`}
-                      value={startDate}
-                      required
-                      onChange={(e) => setStartDate(e.target.value)}
-                    />
-                    <input
-                      type="time"
-                      aria-label="시작 시각"
-                      className={`${inputStyle} w-[110px] px-2`}
-                      value={startTime}
-                      required
-                      onChange={(e) => setStartTime(e.target.value)}
-                    />
+                  <div className="grid grid-cols-[1.8fr_1fr] gap-3">
+                    {/* 날짜 입력 */}
+                    <div className="relative flex h-14 min-w-0 items-center gap-3 rounded-medium border border-line-normal px-4 focus-within:border-primary-normal">
+                      <img src={calendarIcon} alt="" className="size-6 shrink-0" />
+
+                      <span className="whitespace-nowrap text-sm text-label-neutral">
+                        {startDate
+                          ? `${startDate.replaceAll('-', '.')} (${new Date(`${startDate}T00:00:00`).toLocaleDateString('ko-KR', { weekday: 'short' })})`
+                          : 'YYYY.MM.DD (토)'}
+                      </span>
+
+                      <input
+                        type="date"
+                        aria-label="시작 날짜"
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full"
+                        value={startDate}
+                        required
+                        onChange={(e) => setStartDate(e.target.value)}
+                      />
+                    </div>
+
+                    {/* 시간 입력 */}
+                    <div className="relative flex h-14 min-w-0 items-center gap-3 rounded-medium border border-line-normal px-4 focus-within:border-primary-normal">
+                      <img src={clockIcon} alt="" className="size-6 shrink-0" />
+
+                      <span className="text-sm text-label-neutral">{startTime}</span>
+
+                      <input
+                        type="time"
+                        aria-label="시작 시각"
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full"
+                        value={startTime}
+                        required
+                        onChange={(e) => setStartTime(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -268,15 +293,23 @@ export const CreateRoomContent = () => {
                 ))}
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-4 border-b border-line-subtle pb-4 text-xs text-label-neutral">
-                <span>
-                  ▣ {startDate || '2026-09-20'} {startTime}
+              <div className="mt-4 flex flex-wrap gap-4 border-b border-line-subtle pb-4 text-[13px] text-label-neutral">
+                <span className="flex items-center gap-2">
+                  <img src={calendarIcon} alt="" className="size-5 shrink-0 -translate-y-[2px]" />
+                  {startDate
+                    ? `${startDate.replaceAll('-', '. ')} (${new Date(`${startDate}T00:00:00`).toLocaleDateString('ko-KR', { weekday: 'short' })})`
+                    : '2026. 09. 20 (일)'}{' '}
+                  {startTime}
                 </span>
-                <span>♧ 최대 {capacity || '500'}명</span>
+
+                <span className="flex items-center gap-2">
+                  <img src={peopleIcon} alt="" className="size-5 shrink-0 -translate-y-[1px]" />
+                  최대 {capacity || '500'}명
+                </span>
               </div>
 
               <div className="mt-4 flex items-center gap-3">
-                <span className="text-xl text-[#FF3278]">{isPrivate ? '♙' : '◎'}</span>
+                <img src={isPrivate ? lockIcon : globeIcon} alt="" className="size-9 shrink-0" />
                 <div>
                   <strong className="block text-sm">{isPrivate ? '비공개방' : '공개방'}</strong>
                   <p className="mt-1 text-xs text-label-assistive">
@@ -290,7 +323,7 @@ export const CreateRoomContent = () => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => window.history.back()}
+                onClick={() => setIsCancelOpen(true)}
                 className="flex-1"
               >
                 취소
@@ -308,6 +341,16 @@ export const CreateRoomContent = () => {
           </div>
         </form>
       </div>
+
+      {isCancelOpen && (
+        <ConfirmDialog
+          title="작성중인 내용이 사라져요."
+          description="나가시겠습니까?"
+          confirmLabel="나가기"
+          onClose={() => setIsCancelOpen(false)}
+          onConfirm={() => window.history.back()}
+        />
+      )}
     </main>
   );
 };
