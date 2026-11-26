@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import { NotificationPanel } from '@/features/notification/components/NotificationPanel';
 import { notifications as sampleNotifications } from '@/mocks/notifications';
@@ -11,6 +11,7 @@ const GUEST_NICKNAME = '사용자';
 const NOTIFICATION_PANEL_ID = 'notification-panel';
 
 export const AppLayout = () => {
+  const navigate = useNavigate();
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   // shortcut: 알림 API·실시간 연동 전이라 목업을 로컬 상태로 둔다, API 확정 시 TanStack Query로 바꾼다.
   const [notifications, setNotifications] = useState(sampleNotifications);
@@ -23,6 +24,7 @@ export const AppLayout = () => {
     <div className="flex min-h-screen flex-col">
       <Navbar
         user={isLoggedIn ? { nickname: GUEST_NICKNAME } : null}
+        onSearch={(keyword) => navigate(`/?keyword=${encodeURIComponent(keyword)}`)}
         notificationPanelId={NOTIFICATION_PANEL_ID}
         hasUnreadNotification={notifications.some((notification) => !notification.isRead)}
       />

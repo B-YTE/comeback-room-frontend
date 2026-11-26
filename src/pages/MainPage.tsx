@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import {
   RoomFilterDialog,
@@ -6,6 +7,7 @@ import {
 } from '@/features/room/components/RoomFilterDialog';
 
 import { PrivateRoomEntryDialog } from '@/features/room/components/PrivateRoomEntryDialog';
+import { RoomSearchEmpty } from '@/features/room/components/RoomSearchEmpty';
 
 import popular1 from '@/assets/home/popular-1.png';
 import popular2 from '@/assets/home/popular-2.png';
@@ -145,6 +147,10 @@ function ViewingRoomCard({ room }: { room: ViewingRoom }) {
 }
 
 export const MainPage = () => {
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get('keyword')?.trim() ?? '';
+  const isSearchResult = keyword.length > 0;
+
   const [filter, setFilter] = useState<RoomFilter>('all');
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -156,8 +162,14 @@ export const MainPage = () => {
   });
 
   const filteredRooms = viewingRooms.filter((room) => {
-    if (filter === 'all') return true;
-    return room.status === filter;
+    const matchesKeyword =
+      !isSearchResult ||
+      room.title.toLowerCase().includes(keyword.toLowerCase()) ||
+      room.description.toLowerCase().includes(keyword.toLowerCase());
+
+    const matchesStatus = filter === 'all' || room.status === filter;
+
+    return matchesKeyword && matchesStatus;
   });
 
   const filters: { label: string; value: RoomFilter }[] = [
@@ -168,48 +180,55 @@ export const MainPage = () => {
 
   return (
     <main className="w-full pt-12 pb-24">
-      {/* 메인 소개 */}
-      <section className="mb-12 flex flex-wrap items-center justify-between gap-6">
-        <div>
-          <h1 className="typo-heading-h1 text-label-strong">좋아하는 순간, 함께 봐요.</h1>
-          <p className="mt-2 typo-body-large text-label-neutral">
-            같은 영상을 보고, 같은 마음으로 이야기하는 우리들의 방
-          </p>
-        </div>
+      {!isSearchResult && (
+        <>
+          {/* 메인 소개 */}
+          <section className="mb-12 flex flex-wrap items-center justify-between gap-6">
+            <div>
+              <h1 className="typo-heading-h1 text-label-strong">좋아하는 순간, 함께 봐요.</h1>
+              <p className="mt-2 typo-body-large text-label-neutral">
+                같은 영상을 보고, 같은 마음으로 이야기하는 우리들의 방
+              </p>
+            </div>
 
-        <div className="flex items-center gap-2">
-          <span className="size-2 rounded-full bg-accent-live-solid" />
-          <span className="typo-caption text-label-neutral">지금 함께하는 팬 1,284명</span>
-        </div>
-      </section>
+            <div className="flex items-center gap-2">
+              <span className="size-2 rounded-full bg-accent-live-solid" />
+              <span className="typo-caption text-label-neutral">지금 함께하는 팬 1,284명</span>
+            </div>
+          </section>
 
-      {/* 인기 영상 */}
-      <section className="mb-16">
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="typo-heading-semibold-36 text-label-strong">
-            이번 주 <span className="text-primary-normal">인기 영상</span>
-          </h2>
+          {/* 인기 영상 */}
+          <section className="mb-16">
+            <div className="mb-8 flex items-center justify-between">
+              <h2 className="typo-heading-semibold-36 text-label-strong">
+                이번 주 <span className="text-primary-normal">인기 영상</span>
+              </h2>
 
-          <button
-            type="button"
-            className="flex items-center gap-2 typo-label-medium text-label-neutral hover:text-label-strong"
-          >
-            전체 보기
-            <span aria-hidden="true">›</span>
-          </button>
-        </div>
+              <button
+                type="button"
+                className="flex items-center gap-2 typo-label-medium text-label-neutral hover:text-label-strong"
+              >
+                전체 보기
+                <span aria-hidden="true">›</span>
+              </button>
+            </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {popularVideos.map((video) => (
-            <PopularVideoCard key={video.id} video={video} />
-          ))}
-        </div>
-      </section>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {popularVideos.map((video) => (
+                <PopularVideoCard key={video.id} video={video} />
+              ))}
+            </div>
+          </section>
+        </>
+      )}
 
       {/* 시청방 목록 */}
       <section>
         <h2 className="mb-6 typo-heading-semibold-36 text-label-strong">
-          시청방 목록 <span className="ml-2 text-primary-normal">24</span>
+          시청방 목록{' '}
+          <span className="ml-2 text-primary-normal">
+            {isSearchResult ? filteredRooms.length : 24}
+          </span>
         </h2>
 
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -246,11 +265,14 @@ export const MainPage = () => {
           ))}
         </div>
 
-        {filteredRooms.length === 0 && (
-          <p className="py-16 text-center typo-body-large text-label-assistive">
-            해당하는 시청방이 없어요.
-          </p>
-        )}
+        {filteredRooms.length === 0 &&
+          (isSearchResult ? (
+            <RoomSearchEmpty keyword={keyword} />
+          ) : (
+            <p className="py-16 text-center typo-body-large text-label-assistive">
+              해당하는 시청방이 없어요.
+            </p>
+          ))}
       </section>
 
       {/* 시청방 필터 팝업 */}
